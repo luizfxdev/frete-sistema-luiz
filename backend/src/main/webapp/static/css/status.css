@@ -1,0 +1,19 @@
+.badge {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.badge-emitido           { background: #DBEAFE; color: #1E40AF; }
+.badge-saida-confirmada  { background: #FEF3C7; color: #92400E; }
+.badge-em-transito       { background: #E0E7FF; color: #3730A3; }
+.badge-entregue          { background: #D1FAE5; color: #065F46; }
+.badge-nao-entregue      { background: #FEE2E2; color: #991B1B; }
+.badge-cancelado         { background: #F1F5F9; color: #475569; }
+.badge-disponivel        { background: #D1FAE5; color: #065F46; }
+.badge-em-viagem         { background: #FEF3C7; color: #92400E; }
+.badge-em-manutencao     { background: #F1F5F9; color: #475569; }
+.badge-ativo             { background: #D1FAE5; color: #065F46; }
+.badge-inativo           { background: #F1F5F9; color: #475569; }
+.badge-suspenso          { background: #FEE2E2; color: #991B1B; }

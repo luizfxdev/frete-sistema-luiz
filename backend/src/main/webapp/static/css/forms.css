@@ -1,0 +1,16 @@
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 13px; font-weight: 500; color: #334155; }
+.field input, .field select, .field textarea {
+  padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;
+  font-size: 14px; background: #fff; color: var(--color-text);
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+.field .error-text { font-size: 12px; color: #DC2626; }
+
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; }

@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'war'
+    id "org.gretty" version "3.1.1"
+}
+
+group = 'br.com.nextlog'
+version = '1.0'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" }
+}
+
+dependencies {
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+
+    implementation 'org.postgresql:postgresql:42.7.2'
+    implementation 'commons-dbcp:commons-dbcp:1.4'
+
+    implementation 'javax.servlet:jstl:1.2'
+
+    implementation('net.sf.jasperreports:jasperreports:6.20.6') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'org.slf4j',       module: 'slf4j-jcl'
+    }
+    implementation 'org.slf4j:slf4j-jdk14:1.7.36'
+}
+
+gretty {
+    servletContainer = 'tomcat9'
+    contextPath = '/nextlog'
+}
