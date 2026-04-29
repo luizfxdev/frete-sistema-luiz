@@ -7,7 +7,7 @@
 [![JasperReports](https://img.shields.io/badge/JasperReports-6.20.6-darkgreen?style=flat-square)](https://community.jaspersoft.com)
 [![Gradle](https://img.shields.io/badge/Gradle-7.6.4-02303A?style=flat-square&logo=gradle)](https://gradle.org)
 [![Tomcat](https://img.shields.io/badge/Tomcat-9-F8DC75?style=flat-square&logo=apachetomcat&logoColor=black)](https://tomcat.apache.org)
-[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=flat-square&logo=next.js)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
 [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-latest-000000?style=flat-square)](https://ui.shadcn.com)
