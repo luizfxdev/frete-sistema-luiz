@@ -1,0 +1,31 @@
+INSERT INTO frete (numero, id_remetente, id_destinatario, id_motorista, id_veiculo, municipio_origem, uf_origem, municipio_destino, uf_destino, descricao_carga, peso_kg, volumes, valor_frete, aliquota_icms, valor_icms, valor_total, status, data_emissao, data_previsao_entrega, data_saida, data_entrega) VALUES
+('FRT-2026-00015', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Material de construção', 8000.00, 50, 2500.00, 12.00, 300.00, 2800.00, 'ENTREGUE', '2026-04-10', '2026-04-20', '2026-04-11 06:00:00', '2026-04-19 17:00:00'),
+('FRT-2026-00016', 1, 3, 2, 2, 'Recife', 'PE', 'Maceió', 'AL', 'Produtos químicos industriais', 20000.00, 80, 5500.00, 12.00, 660.00, 6160.00, 'ENTREGUE', '2026-04-08', '2026-04-18', '2026-04-09 08:00:00', '2026-04-17 15:00:00'),
+('FRT-2026-00017', 3, 2, 3, 3, 'Maceió', 'AL', 'Fortaleza', 'CE', 'Eletroeletrônicos', 2000.00, 30, 1800.00, 12.00, 216.00, 2016.00, 'EM_TRANSITO', '2026-04-22', '2026-04-28', '2026-04-23 07:30:00', NULL),
+('FRT-2026-00018', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Cimento', 7500.00, 40, 2200.00, 12.00, 264.00, 2464.00, 'ENTREGUE', '2026-04-05', '2026-04-15', '2026-04-06 06:00:00', '2026-04-16 18:00:00'),
+('FRT-2026-00019', 1, 3, 2, 2, 'Recife', 'PE', 'Maceió', 'AL', 'Bebidas', 15000.00, 60, 3800.00, 12.00, 456.00, 4256.00, 'ENTREGUE', '2026-03-25', '2026-04-05', '2026-03-26 08:00:00', '2026-04-03 16:00:00'),
+('FRT-2026-00020', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Têxteis industriais', 5000.00, 35, 2100.00, 12.00, 252.00, 2352.00, 'ENTREGUE', '2026-04-12', '2026-04-22', '2026-04-13 05:00:00', '2026-04-21 14:00:00'),
+('FRT-2026-00021', 1, 3, 2, 2, 'Recife', 'PE', 'Maceió', 'AL', 'Equipamentos eletrônicos', 3500.00, 25, 1950.00, 12.00, 234.00, 2184.00, 'ENTREGUE', '2026-04-01', '2026-04-10', '2026-04-02 07:00:00', '2026-04-09 13:00:00'),
+('FRT-2026-00022', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Produtos de limpeza', 4200.00, 45, 3200.00, 12.00, 384.00, 3584.00, 'NAO_ENTREGUE', '2026-04-15', '2026-04-25', '2026-04-16 06:30:00', NULL),
+('FRT-2026-00023', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Peças automotivas', 2800.00, 20, 1600.00, 12.00, 192.00, 1792.00, 'SAIDA_CONFIRMADA', '2026-05-01', '2026-05-08', '2026-05-02 07:00:00', NULL),
+('FRT-2026-00024', 3, 1, 3, 3, 'Maceió', 'AL', 'Recife', 'PE', 'Alimentos para indústria', 6000.00, 40, 1700.00, 12.00, 204.00, 1904.00, 'EMITIDO', '2026-05-03', '2026-05-10', NULL, NULL),
+('FRT-2026-00025', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Maquinaria industrial', 18000.00, 60, 6500.00, 12.00, 780.00, 7280.00, 'EM_TRANSITO', '2026-04-20', '2026-05-05', '2026-04-21 08:00:00', NULL),
+('FRT-2026-00026', 1, 3, 2, 2, 'Recife', 'PE', 'Maceió', 'AL', 'Produtos agrícolas', 12000.00, 55, 2800.00, 12.00, 336.00, 3136.00, 'ENTREGUE', '2026-03-28', '2026-04-08', '2026-03-29 06:00:00', '2026-04-07 12:00:00'),
+('FRT-2026-00027', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Plásticos e resinas', 3000.00, 30, 1500.00, 12.00, 180.00, 1680.00, 'ENTREGUE', '2026-04-18', '2026-04-25', '2026-04-19 07:30:00', '2026-04-24 16:00:00'),
+('FRT-2026-00028', 1, 2, 1, 1, 'Recife', 'PE', 'Fortaleza', 'CE', 'Papel e celulose', 9000.00, 50, 2400.00, 12.00, 288.00, 2688.00, 'CANCELADO', '2026-04-14', '2026-04-24', NULL, NULL);
+
+INSERT INTO ocorrencia_frete (id_frete, tipo, data_hora, municipio, uf, descricao, nome_recebedor, documento_recebedor) VALUES
+((SELECT id FROM frete WHERE numero='FRT-2026-00015'), 'SAIDA_PATIO', '2026-04-11 06:00:00', 'Recife', 'PE', 'Saída do pátio confirmada', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00015'), 'EM_ROTA', '2026-04-15 10:00:00', 'Caruaru', 'PE', 'Veículo em rota', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00015'), 'ENTREGA_REALIZADA', '2026-04-19 17:00:00', 'Fortaleza', 'CE', 'Entrega concluída', 'Francisco Silva', '11144477735'),
+((SELECT id FROM frete WHERE numero='FRT-2026-00016'), 'SAIDA_PATIO', '2026-04-09 08:00:00', 'Recife', 'PE', 'Saída do pátio', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00016'), 'EM_ROTA', '2026-04-13 09:00:00', 'Garanhuns', 'PE', 'Em rota - 200 km percorridos', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00016'), 'ENTREGA_REALIZADA', '2026-04-17 15:00:00', 'Maceió', 'AL', 'Entrega concluída', 'Ana Costa', '93541134780'),
+((SELECT id FROM frete WHERE numero='FRT-2026-00017'), 'SAIDA_PATIO', '2026-04-23 07:30:00', 'Maceió', 'AL', 'Saída do pátio', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00017'), 'EM_ROTA', '2026-04-24 11:00:00', 'Penedo', 'AL', 'Veículo em rota - posição atualizada', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00018'), 'SAIDA_PATIO', '2026-04-06 06:00:00', 'Recife', 'PE', 'Saída do pátio', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00018'), 'EM_ROTA', '2026-04-10 10:00:00', 'Campina Grande', 'PB', 'Em rota', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00018'), 'ENTREGA_REALIZADA', '2026-04-16 18:00:00', 'Fortaleza', 'CE', 'Entrega concluída', 'Paulo Oliveira', '52998224725'),
+((SELECT id FROM frete WHERE numero='FRT-2026-00019'), 'SAIDA_PATIO', '2026-03-26 08:00:00', 'Recife', 'PE', 'Saída do pátio confirmada', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00019'), 'EM_ROTA', '2026-03-30 12:00:00', 'Palmares', 'PE', 'Veículo em rota', NULL, NULL),
+((SELECT id FROM frete WHERE numero='FRT-2026-00019'), 'ENTREGA_REALIZADA', '2026-04-03 16:00:00', 'Maceió', 'AL', 'Entrega concluída', 'Maria Santos', '11144477735');

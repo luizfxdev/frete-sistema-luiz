@@ -52,19 +52,34 @@ public class ManutencaoControlador extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException, IOException {
+    String acao = req.getPathInfo();
+    if (acao == null) acao = "/";
+
+    if (acao.startsWith("/excluir/")) {
         try {
-            ManutencaoVeiculo m = bind(req);
-            manutencaoBO.salvar(m);
+            Long id = Long.valueOf(acao.substring("/excluir/".length()));
+            manutencaoBO.excluir(id);
             resp.sendRedirect(req.getContextPath() + "/manutencoes");
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
-            req.setAttribute("manutencao", bind(req));
-            preencherListas(req);
-            req.getRequestDispatcher("/WEB-INF/views/manutencao/form.jsp").forward(req, resp);
+            listar(req, resp);
         }
+        return;
     }
+
+    try {
+        ManutencaoVeiculo m = bind(req);
+        manutencaoBO.salvar(m);
+        resp.sendRedirect(req.getContextPath() + "/manutencoes");
+    } catch (NegocioException e) {
+        req.setAttribute("erro", e.getMessage());
+        req.setAttribute("manutencao", bind(req));
+        preencherListas(req);
+        req.getRequestDispatcher("/WEB-INF/views/manutencao/form.jsp").forward(req, resp);
+    }
+}
 
     private void listar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String filtro = req.getParameter("filtro");

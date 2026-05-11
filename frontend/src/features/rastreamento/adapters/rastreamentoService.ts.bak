@@ -1,0 +1,18 @@
+import { get } from "@/core/api/httpClient";
+import type { StatusEntrega } from "@/shared/types/api";
+
+export interface EntregaRastreamento {
+  numero: string;
+  status: StatusEntrega;
+  municipioOrigem: string;
+  ufOrigem: string;
+  municipioDestino: string;
+  ufDestino: string;
+  dataEmissao: string;
+  dataPrevisaoEntrega: string;
+  dataEntrega: string | null;
+}
+
+export async function buscarRastreamento(documento: string): Promise<EntregaRastreamento[]> {
+  return get<EntregaRastreamento[]>(`/api/rastreamento/buscar?documento=${documento}`);
+}

@@ -11,7 +11,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FreteDAO {
 
@@ -126,7 +128,6 @@ public class FreteDAO {
             for (Object p : params) ps.setObject(idx++, p);
             ps.setInt(idx++, tamanhoPagina);
             ps.setInt(idx, (pagina - 1) * tamanhoPagina);
-
             try (ResultSet rs = ps.executeQuery()) {
                 List<Frete> lista = new ArrayList<>();
                 while (rs.next()) lista.add(mapear(rs));
@@ -186,6 +187,32 @@ public class FreteDAO {
                 List<Frete> lista = new ArrayList<>();
                 while (rs.next()) lista.add(mapear(rs));
                 return lista;
+            }
+        }
+    }
+
+    public List<Map<String, Object>> contarMensalUltimosMeses(int meses) throws SQLException {
+        String sql =
+            "SELECT TO_CHAR(data_emissao, 'Mon') AS mes, " +
+            "       COUNT(*) FILTER (WHERE status = 'ENTREGUE')  AS concluidos, " +
+            "       COUNT(*) FILTER (WHERE status = 'CANCELADO') AS cancelados " +
+            "FROM frete " +
+            "WHERE data_emissao >= CURRENT_DATE - INTERVAL '1 month' * ? " +
+            "GROUP BY DATE_TRUNC('month', data_emissao), TO_CHAR(data_emissao, 'Mon') " +
+            "ORDER BY DATE_TRUNC('month', data_emissao)";
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, meses);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Map<String, Object>> resultado = new ArrayList<>();
+                while (rs.next()) {
+                    Map<String, Object> linha = new LinkedHashMap<>();
+                    linha.put("mes",        rs.getString("mes"));
+                    linha.put("concluidos", rs.getInt("concluidos"));
+                    linha.put("cancelados", rs.getInt("cancelados"));
+                    resultado.add(linha);
+                }
+                return resultado;
             }
         }
     }

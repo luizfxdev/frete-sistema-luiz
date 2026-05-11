@@ -4,66 +4,121 @@
 <jsp:include page="/WEB-INF/views/shared/header.jsp"/>
 <jsp:include page="/WEB-INF/views/shared/sidebar.jsp"/>
 
-<main class="app-content">
-    <h1 class="text-2xl font-semibold text-slate-900 mb-6">
+<main style="padding: 24px; background-color: #ffffff; margin-left: 200px; min-height: 100vh;">
+    <h1 style="font-size: 28px; font-weight: 600; color: #1f2937; margin: 0 0 24px 0; font-family: 'Avenir Next', sans-serif;">
         ${cliente.id == null ? 'Novo cliente' : 'Editar cliente'}
     </h1>
 
     <c:if test="${not empty erro}">
-        <div class="alert alert-error"><c:out value="${erro}"/></div>
+        <div style="background-color: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 6px; margin-bottom: 24px; border-left: 4px solid #991b1b; font-family: 'Avenir Next', sans-serif;">
+            <c:out value="${erro}"/>
+        </div>
     </c:if>
 
-    <form method="post" action="${pageContext.request.contextPath}/clientes" class="card">
+    <form method="post" action="${pageContext.request.contextPath}/clientes" style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px;">
         <input type="hidden" name="id" value="<c:out value='${cliente.id}'/>"/>
 
-        <div class="form-grid">
-            <div class="field">
-                <label>Razão social *</label>
-                <input type="text" name="razaoSocial" required value="<c:out value='${cliente.razaoSocial}'/>">
+        <!-- Seção: Informações básicas -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 24px;">
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Razão social <span style="color: #dc2626;">*</span></label>
+                <input type="text" name="razaoSocial" required value="<c:out value='${cliente.razaoSocial}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
             </div>
-            <div class="field">
-                <label>Nome fantasia</label>
-                <input type="text" name="nomeFantasia" value="<c:out value='${cliente.nomeFantasia}'/>">
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Nome fantasia</label>
+                <input type="text" name="nomeFantasia" value="<c:out value='${cliente.nomeFantasia}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
             </div>
-            <div class="field">
-                <label>CNPJ *</label>
-                <input type="text" name="cnpj" required data-mask="cnpj" value="<c:out value='${cliente.cnpj}'/>">
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Tipo de documento <span style="color: #dc2626;">*</span></label>
+                <select name="tipoDocumento" required style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif; background-color: white; color: #1f2937;">
+                    <option value="">Selecione</option>
+                    <option value="CPF"  ${cliente.tipoDocumento == 'CPF'  ? 'selected' : ''}>CPF</option>
+                    <option value="CNPJ" ${cliente.tipoDocumento == 'CNPJ' ? 'selected' : ''}>CNPJ</option>
+                </select>
             </div>
-            <div class="field">
-                <label>Inscrição estadual</label>
-                <input type="text" name="inscricaoEstadual" value="<c:out value='${cliente.inscricaoEstadual}'/>">
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Documento <span style="color: #dc2626;">*</span></label>
+                <input type="text" name="documento" required data-mask="documento" value="<c:out value='${cliente.documento}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
             </div>
-            <div class="field">
-                <label>Tipo *</label>
-                <select name="tipo" required>
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Inscrição estadual</label>
+                <input type="text" name="inscricaoEstadual" value="<c:out value='${cliente.inscricaoEstadual}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Tipo <span style="color: #dc2626;">*</span></label>
+                <select name="tipo" required style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif; background-color: white; color: #1f2937;">
                     <option value="">Selecione</option>
                     <c:forEach var="t" items="${tiposCliente}">
                         <option value="${t}" ${cliente.tipo == t ? 'selected' : ''}>${t}</option>
                     </c:forEach>
                 </select>
             </div>
-            <div class="field">
-                <label>Status</label>
-                <select name="status">
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Status</label>
+                <select name="status" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif; background-color: white; color: #1f2937;">
                     <option value="ATIVO"   ${cliente.status == 'ATIVO'   ? 'selected' : ''}>ATIVO</option>
                     <option value="INATIVO" ${cliente.status == 'INATIVO' ? 'selected' : ''}>INATIVO</option>
                 </select>
             </div>
-
-            <div class="field full"><label>Logradouro *</label><input type="text" name="logradouro" required value="<c:out value='${cliente.logradouro}'/>"></div>
-            <div class="field"><label>Número *</label><input type="text" name="numero" required value="<c:out value='${cliente.numero}'/>"></div>
-            <div class="field"><label>Complemento</label><input type="text" name="complemento" value="<c:out value='${cliente.complemento}'/>"></div>
-            <div class="field"><label>Bairro *</label><input type="text" name="bairro" required value="<c:out value='${cliente.bairro}'/>"></div>
-            <div class="field"><label>Município *</label><input type="text" name="municipio" required value="<c:out value='${cliente.municipio}'/>"></div>
-            <div class="field"><label>UF *</label><input type="text" name="uf" required maxlength="2" value="<c:out value='${cliente.uf}'/>"></div>
-            <div class="field"><label>CEP *</label><input type="text" name="cep" required data-mask="cep" value="<c:out value='${cliente.cep}'/>"></div>
-            <div class="field"><label>Telefone</label><input type="text" name="telefone" data-mask="telefone" value="<c:out value='${cliente.telefone}'/>"></div>
-            <div class="field"><label>E-mail</label><input type="email" name="email" value="<c:out value='${cliente.email}'/>"></div>
         </div>
 
-        <div class="form-actions">
-            <a href="${pageContext.request.contextPath}/clientes" class="btn btn-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-primary">Salvar</button>
+        <!-- Seção: Endereço -->
+        <div style="border-top: 1px solid #d1d5db; padding-top: 24px; margin-bottom: 24px;">
+            <h3 style="font-size: 16px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0; font-family: 'Avenir Next', sans-serif;">Endereço</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">CEP <span style="color: #dc2626;">*</span></label>
+                    <input type="text" name="cep" required data-mask="cep" value="<c:out value='${cliente.cep}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+                <div style="display: flex; flex-direction: column; grid-column: span 3;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Logradouro <span style="color: #dc2626;">*</span></label>
+                    <input type="text" name="logradouro" required value="<c:out value='${cliente.logradouro}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Número <span style="color: #dc2626;">*</span></label>
+                    <input type="text" name="numero" required value="<c:out value='${cliente.numero}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+                <div style="display: flex; flex-direction: column; grid-column: span 3;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Complemento</label>
+                    <input type="text" name="complemento" value="<c:out value='${cliente.complemento}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Bairro <span style="color: #dc2626;">*</span></label>
+                    <input type="text" name="bairro" required value="<c:out value='${cliente.bairro}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+                <div style="display: flex; flex-direction: column; grid-column: span 2;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Município <span style="color: #dc2626;">*</span></label>
+                    <input type="text" name="municipio" required value="<c:out value='${cliente.municipio}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">UF <span style="color: #dc2626;">*</span></label>
+                    <input type="text" name="uf" required maxlength="2" value="<c:out value='${cliente.uf}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif; text-transform: uppercase;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Contato -->
+        <div style="border-top: 1px solid #d1d5db; padding-top: 24px; margin-bottom: 24px;">
+            <h3 style="font-size: 16px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0; font-family: 'Avenir Next', sans-serif;">Contato</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Telefone</label>
+                    <input type="text" name="telefone" data-mask="telefone" value="<c:out value='${cliente.telefone}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">E-mail</label>
+                    <input type="email" name="email" value="<c:out value='${cliente.email}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #d1d5db; padding-top: 24px;">
+            <a href="${pageContext.request.contextPath}/clientes" style="background-color: #d3d3d3; color: #333; padding: 10px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; font-family: 'Avenir Next', sans-serif; display: inline-block;">Cancelar</a>
+            <button type="submit" style="background-color: #2563eb; color: white; padding: 10px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Avenir Next', sans-serif;">Salvar</button>
         </div>
     </form>
 </main>

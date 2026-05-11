@@ -3,14 +3,13 @@ package br.com.nextlog.cadastro.cliente;
 import br.com.nextlog.enums.TipoCliente;
 
 public class Cliente {
-
     private Long id;
     private String razaoSocial;
     private String nomeFantasia;
-    private String cnpj;
+    private String tipoDocumento;
+    private String documento;
     private String inscricaoEstadual;
     private TipoCliente tipo;
-
     private String logradouro;
     private String numero;
     private String complemento;
@@ -18,7 +17,6 @@ public class Cliente {
     private String municipio;
     private String uf;
     private String cep;
-
     private String telefone;
     private String email;
     private String status;
@@ -32,14 +30,19 @@ public class Cliente {
     public String getNomeFantasia() { return nomeFantasia; }
     public void setNomeFantasia(String nomeFantasia) { this.nomeFantasia = nomeFantasia; }
 
-    public String getCnpj() { return cnpj; }
-    public void setCnpj(String cnpj) { this.cnpj = cnpj; }
+    public String getTipoDocumento() { return tipoDocumento; }
+    public void setTipoDocumento(String tipoDocumento) { this.tipoDocumento = tipoDocumento; }
+
+    public String getDocumento() { return documento; }
+    public void setDocumento(String documento) { this.documento = documento; }
 
     public String getInscricaoEstadual() { return inscricaoEstadual; }
     public void setInscricaoEstadual(String inscricaoEstadual) { this.inscricaoEstadual = inscricaoEstadual; }
 
     public TipoCliente getTipo() { return tipo; }
     public void setTipo(TipoCliente tipo) { this.tipo = tipo; }
+
+    public String getTipoNome() { return tipo != null ? tipo.name() : ""; }
 
     public String getLogradouro() { return logradouro; }
     public void setLogradouro(String logradouro) { this.logradouro = logradouro; }

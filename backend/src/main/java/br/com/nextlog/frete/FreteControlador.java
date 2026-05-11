@@ -9,6 +9,7 @@ import br.com.nextlog.cadastro.veiculo.VeiculoBO;
 import br.com.nextlog.enums.StatusFrete;
 import br.com.nextlog.exception.NegocioException;
 import br.com.nextlog.frete.ocorrencia.OcorrenciaBO;
+import br.com.nextlog.util.JsonResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,7 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/fretes/*")
 public class FreteControlador extends HttpServlet {
@@ -39,6 +42,21 @@ public class FreteControlador extends HttpServlet {
         if (acao == null) acao = "/";
 
         try {
+            if (acao.startsWith("/api/cliente/")) {
+                Long id = Long.valueOf(acao.substring("/api/cliente/".length()));
+                Cliente c = clienteBO.buscarPorId(id);
+                if (c == null) {
+                    JsonResponse.erro(resp, HttpServletResponse.SC_NOT_FOUND, "Cliente não encontrado.");
+                    return;
+                }
+                Map<String, Object> dados = new LinkedHashMap<>();
+                dados.put("id", c.getId());
+                dados.put("razaoSocial", c.getRazaoSocial());
+                dados.put("municipio", c.getMunicipio());
+                dados.put("uf", c.getUf());
+                JsonResponse.ok(resp, dados);
+                return;
+            }
             if ("/novo".equals(acao)) {
                 req.setAttribute("frete", new Frete());
                 carregarListasAuxiliares(req);
@@ -134,12 +152,23 @@ public class FreteControlador extends HttpServlet {
         int total = freteBO.contar(filtro, statusFiltro);
         int totalPaginas = (int) Math.ceil((double) total / PAGE_SIZE);
 
+        int totalEmitido = freteBO.contar(null, "EMITIDO");
+        int totalEmTransito = freteBO.contar(null, "EM_TRANSITO");
+        int totalEntregue = freteBO.contar(null, "ENTREGUE");
+        int totalCancelado = freteBO.contar(null, "CANCELADO");
+        int totalFretes = totalEmitido + totalEmTransito + totalEntregue + totalCancelado;
+
         req.setAttribute("fretes", lista);
         req.setAttribute("filtro", filtro);
         req.setAttribute("statusFiltro", statusFiltro);
         req.setAttribute("statusList", StatusFrete.values());
         req.setAttribute("pagina", pagina);
         req.setAttribute("totalPaginas", Math.max(totalPaginas, 1));
+        req.setAttribute("totalFretes", totalFretes);
+        req.setAttribute("totalEmitido", totalEmitido);
+        req.setAttribute("totalEmTransito", totalEmTransito);
+        req.setAttribute("totalEntregue", totalEntregue);
+        req.setAttribute("totalCancelado", totalCancelado);
         req.getRequestDispatcher("/WEB-INF/views/frete/lista.jsp").forward(req, resp);
     }
 

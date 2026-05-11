@@ -26,6 +26,15 @@ public class ManutencaoBO {
         }
     }
 
+    public void excluir(Long id) {
+        try {
+            manutencaoDAO.excluir(id);
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao excluir manutenção", e);
+            throw new NegocioException("Erro ao excluir manutenção.");
+        }
+    }
+
     public ManutencaoVeiculo buscarPorId(Long id) {
         try {
             return manutencaoDAO.buscarPorId(id);

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class LoginDAO {
 
     public Login buscarPorEmail(String email) throws SQLException {
-        String sql = "SELECT id, nome, email, senha, ativo FROM usuario WHERE email = ?";
+        String sql = "SELECT id, nome, email, senha, role, ativo FROM usuario WHERE email = ?";
         try (Connection conn = ConnectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
@@ -21,9 +21,20 @@ public class LoginDAO {
                 l.setNome(rs.getString("nome"));
                 l.setEmail(rs.getString("email"));
                 l.setSenha(rs.getString("senha"));
+                l.setRole(rs.getString("role"));
                 l.setAtivo(rs.getBoolean("ativo"));
                 return l;
             }
+        }
+    }
+
+    public void atualizarSenha(Long idUsuario, String hashSenha) throws SQLException {
+        String sql = "UPDATE usuario SET senha = ? WHERE id = ?";
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hashSenha);
+            ps.setLong(2, idUsuario);
+            ps.executeUpdate();
         }
     }
 }

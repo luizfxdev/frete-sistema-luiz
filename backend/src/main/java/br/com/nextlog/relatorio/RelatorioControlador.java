@@ -21,7 +21,6 @@ public class RelatorioControlador extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         String acao = req.getPathInfo();
         if (acao == null) acao = "/";
 
@@ -32,22 +31,25 @@ public class RelatorioControlador extends HttpServlet {
                 return;
             }
             if ("/romaneio".equals(acao)) {
-                String idStr = req.getParameter("idMotorista");
+                String idStr   = req.getParameter("idMotorista");
                 String dataStr = req.getParameter("data");
                 if (idStr == null || idStr.isEmpty() || dataStr == null || dataStr.isEmpty()) {
-                    req.setAttribute("motoristas", motoristaBO.listarAtivos());
-                    req.getRequestDispatcher("/WEB-INF/views/relatorio/romaneio.jsp").forward(req, resp);
+                    req.setAttribute("motoristas",   motoristaBO.listarAtivos());
+                    req.setAttribute("resumoMensal", relatorioBO.resumoMensal(6));
+                    req.getRequestDispatcher("/WEB-INF/views/relatorio/index.jsp").forward(req, resp);
                     return;
                 }
                 byte[] pdf = relatorioBO.gerarRomaneioPdf(Long.valueOf(idStr), LocalDate.parse(dataStr));
                 escreverPdf(resp, "romaneio-" + idStr + "-" + dataStr + ".pdf", pdf);
                 return;
             }
-            req.setAttribute("motoristas", motoristaBO.listarAtivos());
+            req.setAttribute("motoristas",   motoristaBO.listarAtivos());
+            req.setAttribute("resumoMensal", relatorioBO.resumoMensal(6));
             req.getRequestDispatcher("/WEB-INF/views/relatorio/index.jsp").forward(req, resp);
         } catch (NegocioException e) {
-            req.setAttribute("erro", e.getMessage());
-            req.setAttribute("motoristas", motoristaBO.listarAtivos());
+            req.setAttribute("erro",         e.getMessage());
+            req.setAttribute("motoristas",   motoristaBO.listarAtivos());
+            req.setAttribute("resumoMensal", relatorioBO.resumoMensal(6));
             req.getRequestDispatcher("/WEB-INF/views/relatorio/index.jsp").forward(req, resp);
         }
     }

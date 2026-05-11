@@ -1,11 +1,15 @@
 package br.com.nextlog.cadastro.cliente;
 
+import br.com.nextlog.enums.TipoCliente;
 import br.com.nextlog.exception.CadastroException;
 import br.com.nextlog.exception.NegocioException;
 import br.com.nextlog.util.CnpjValidator;
+import br.com.nextlog.util.CpfValidator;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,11 +21,13 @@ public class ClienteBO {
     public Long salvar(Cliente cliente) {
         validar(cliente);
         try {
-            String cnpjLimpo = CnpjValidator.limpar(cliente.getCnpj());
-            cliente.setCnpj(cnpjLimpo);
+            String documentoLimpo = "CNPJ".equals(cliente.getTipoDocumento())
+                    ? CnpjValidator.limpar(cliente.getDocumento())
+                    : CpfValidator.limpar(cliente.getDocumento());
+            cliente.setDocumento(documentoLimpo);
 
-            if (clienteDAO.existePorCnpj(cnpjLimpo, cliente.getId())) {
-                throw new CadastroException("Já existe um cliente cadastrado com este CNPJ.");
+            if (clienteDAO.existePorDocumento(documentoLimpo, cliente.getId())) {
+                throw new CadastroException("Já existe um cliente cadastrado com este documento.");
             }
 
             if (cliente.getStatus() == null || cliente.getStatus().trim().isEmpty()) {
@@ -88,14 +94,49 @@ public class ClienteBO {
         }
     }
 
+    public Map<String, Integer> contarPorStatus() {
+        try {
+            Map<String, Integer> totais = new HashMap<>();
+            totais.put("ATIVO", clienteDAO.contarPorStatus("ATIVO"));
+            totais.put("INATIVO", clienteDAO.contarPorStatus("INATIVO"));
+            return totais;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao contar clientes por status", e);
+            throw new NegocioException("Erro ao contar clientes por status.");
+        }
+    }
+
+    public Map<String, Integer> contarPorTipo() {
+        try {
+            Map<String, Integer> totais = new HashMap<>();
+            totais.put("PF", clienteDAO.contarPorTipoDocumento("CPF"));
+            totais.put("PJ", clienteDAO.contarPorTipoDocumento("CNPJ"));
+            return totais;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao contar clientes por tipo", e);
+            throw new NegocioException("Erro ao contar clientes por tipo.");
+        }
+    }
+
     private void validar(Cliente c) {
         if (c == null) throw new CadastroException("Cliente é obrigatório.");
         if (c.getRazaoSocial() == null || c.getRazaoSocial().trim().isEmpty())
             throw new CadastroException("A razão social é obrigatória.");
         if (c.getTipo() == null)
             throw new CadastroException("O tipo do cliente é obrigatório.");
-        if (!CnpjValidator.isValido(c.getCnpj()))
-            throw new CadastroException("O CNPJ informado é inválido.");
+        if (c.getTipoDocumento() == null || c.getTipoDocumento().trim().isEmpty())
+            throw new CadastroException("O tipo de documento é obrigatório.");
+        if (!"CPF".equals(c.getTipoDocumento()) && !"CNPJ".equals(c.getTipoDocumento()))
+            throw new CadastroException("Tipo de documento inválido.");
+
+        if ("CNPJ".equals(c.getTipoDocumento())) {
+            if (!CnpjValidator.isValido(c.getDocumento()))
+                throw new CadastroException("O CNPJ informado é inválido.");
+        } else {
+            if (!CpfValidator.isValido(c.getDocumento()))
+                throw new CadastroException("O CPF informado é inválido.");
+        }
+
         if (c.getLogradouro() == null || c.getLogradouro().trim().isEmpty())
             throw new CadastroException("O logradouro é obrigatório.");
         if (c.getNumero() == null || c.getNumero().trim().isEmpty())

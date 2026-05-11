@@ -38,6 +38,14 @@ public class ManutencaoDAO {
         }
     }
 
+    public void excluir(Long id) throws SQLException {
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM manutencao_veiculo WHERE id=?")) {
+            ps.setLong(1, id);
+            ps.executeUpdate();
+        }
+    }
+
     public ManutencaoVeiculo buscarPorId(Long id) throws SQLException {
         String sql = "SELECT mv.*, v.placa AS veiculo_placa FROM manutencao_veiculo mv " +
                 "JOIN veiculo v ON v.id = mv.id_veiculo WHERE mv.id=?";

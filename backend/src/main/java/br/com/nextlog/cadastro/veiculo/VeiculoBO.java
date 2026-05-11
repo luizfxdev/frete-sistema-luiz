@@ -8,7 +8,9 @@ import br.com.nextlog.util.PlacaValidator;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +46,22 @@ public class VeiculoBO {
         }
     }
 
+    public void excluir(Long id) {
+        try {
+            Veiculo v = veiculoDAO.buscarPorId(id);
+            if (v != null && v.getStatus() == StatusVeiculo.EM_VIAGEM) {
+                throw new CadastroException("Veículo em viagem não pode ser excluído.");
+            }
+            if (veiculoDAO.estaEmFreteAtivo(id)) {
+                throw new CadastroException("Veículo possui fretes ativos e não pode ser excluído.");
+            }
+            veiculoDAO.excluir(id);
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao excluir veículo", e);
+            throw new NegocioException("Erro ao excluir veículo.");
+        }
+    }
+
     public Veiculo buscarPorId(Long id) {
         try {
             return veiculoDAO.buscarPorId(id);
@@ -68,6 +86,19 @@ public class VeiculoBO {
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Erro ao contar veículos", e);
             throw new NegocioException("Erro ao contar veículos.");
+        }
+    }
+
+    public Map<StatusVeiculo, Integer> contarPorStatus() {
+        try {
+            Map<StatusVeiculo, Integer> totais = new EnumMap<>(StatusVeiculo.class);
+            for (StatusVeiculo s : StatusVeiculo.values()) {
+                totais.put(s, veiculoDAO.contarPorStatus(s));
+            }
+            return totais;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao contar veículos por status", e);
+            throw new NegocioException("Erro ao contar veículos por status.");
         }
     }
 

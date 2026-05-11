@@ -13,7 +13,7 @@ import java.util.Map;
 public final class JsonResponse {
 
     private static final DateTimeFormatter ISO_DATE_TIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    private static final DateTimeFormatter ISO_DATE      = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
 
     private JsonResponse() {}
 
@@ -46,16 +46,16 @@ public final class JsonResponse {
     }
 
     private static void appendValue(StringBuilder sb, Object value) {
-        if (value == null)                    { sb.append("null"); return; }
-        if (value instanceof Boolean)         { sb.append(value); return; }
-        if (value instanceof Number)          { sb.append(value); return; }
-        if (value instanceof BigDecimal)      { sb.append(((BigDecimal) value).toPlainString()); return; }
-        if (value instanceof LocalDate)       { sb.append(escape(((LocalDate) value).format(ISO_DATE))); return; }
-        if (value instanceof LocalDateTime)   { sb.append(escape(((LocalDateTime) value).format(ISO_DATE_TIME))); return; }
-        if (value instanceof Enum)            { sb.append(escape(((Enum<?>) value).name())); return; }
-        if (value instanceof Map)             { appendMap(sb, (Map<?, ?>) value); return; }
-        if (value instanceof Collection)      { appendCollection(sb, (Collection<?>) value); return; }
-        if (value.getClass().isArray())       { appendCollection(sb, java.util.Arrays.asList((Object[]) value)); return; }
+        if (value == null) { sb.append("null"); return; }
+        if (value instanceof Boolean) { sb.append(value); return; }
+        if (value instanceof Number) { sb.append(value); return; }
+        if (value instanceof BigDecimal) { sb.append(((BigDecimal) value).toPlainString()); return; }
+        if (value instanceof LocalDate) { sb.append(escape(((LocalDate) value).format(ISO_DATE))); return; }
+        if (value instanceof LocalDateTime) { sb.append(escape(((LocalDateTime) value).format(ISO_DATE_TIME))); return; }
+        if (value instanceof Enum) { sb.append(escape(((Enum<?>) value).name())); return; }
+        if (value instanceof Map) { appendMap(sb, (Map<?, ?>) value); return; }
+        if (value instanceof Collection) { appendCollection(sb, (Collection<?>) value); return; }
+        if (value.getClass().isArray()) { appendCollection(sb, java.util.Arrays.asList((Object[]) value)); return; }
         sb.append(escape(value.toString()));
     }
 
@@ -89,11 +89,11 @@ public final class JsonResponse {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             switch (c) {
-                case '"':  sb.append("\\\""); break;
+                case '"': sb.append("\\\""); break;
                 case '\\': sb.append("\\\\"); break;
-                case '\n': sb.append("\\n");  break;
-                case '\r': sb.append("\\r");  break;
-                case '\t': sb.append("\\t");  break;
+                case '\n': sb.append("\\n"); break;
+                case '\r': sb.append("\\r"); break;
+                case '\t': sb.append("\\t"); break;
                 default:
                     if (c < 0x20) sb.append(String.format("\\u%04x", (int) c));
                     else sb.append(c);

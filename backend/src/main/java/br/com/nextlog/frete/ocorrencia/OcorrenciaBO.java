@@ -51,7 +51,7 @@ public class OcorrenciaBO {
             if (o.getTipo() == TipoOcorrencia.SAIDA_PATIO && f.getStatus() == StatusFrete.EMITIDO) {
                 freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.SAIDA_CONFIRMADA);
                 freteDAO.atualizarDataSaida(conn, f.getId(), Timestamp.valueOf(o.getDataHora()));
-                veiculoDAO.atualizarStatus(conn, f.getIdVeiculo(), StatusVeiculo.EM_VIAGEM);
+                veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.EM_VIAGEM, conn);
             }
 
             if (o.getTipo() == TipoOcorrencia.EM_ROTA && f.getStatus() == StatusFrete.SAIDA_CONFIRMADA) {
@@ -61,14 +61,15 @@ public class OcorrenciaBO {
             if (o.getTipo() == TipoOcorrencia.ENTREGA_REALIZADA) {
                 freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.ENTREGUE);
                 freteDAO.atualizarDataEntrega(conn, f.getId(), Timestamp.valueOf(o.getDataHora()));
-                veiculoDAO.atualizarStatus(conn, f.getIdVeiculo(), StatusVeiculo.DISPONIVEL);
+                veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.DISPONIVEL, conn);
             }
 
             Long id = ocorrenciaDAO.inserir(conn, o);
             conn.commit();
             return id;
         } catch (NegocioException ne) {
-            rollback(conn); throw ne;
+            rollback(conn);
+            throw ne;
         } catch (SQLException e) {
             rollback(conn);
             LOG.log(Level.SEVERE, "Erro ao registrar ocorrência", e);
@@ -88,9 +89,9 @@ public class OcorrenciaBO {
     }
 
     private void validar(OcorrenciaFrete o) {
-        if (o == null)              throw new FreteException("Ocorrência é obrigatória.");
-        if (o.getIdFrete() == null) throw new FreteException("Frete é obrigatório.");
-        if (o.getTipo() == null)    throw new FreteException("Tipo da ocorrência é obrigatório.");
+        if (o == null)               throw new FreteException("Ocorrência é obrigatória.");
+        if (o.getIdFrete() == null)  throw new FreteException("Frete é obrigatório.");
+        if (o.getTipo() == null)     throw new FreteException("Tipo da ocorrência é obrigatório.");
         if (o.getDataHora() == null) throw new FreteException("Data/hora da ocorrência é obrigatória.");
         if (o.getMunicipio() == null || o.getMunicipio().trim().isEmpty())
             throw new FreteException("Município da ocorrência é obrigatório.");
@@ -100,9 +101,8 @@ public class OcorrenciaBO {
         boolean exigeDescricao = o.getTipo() == TipoOcorrencia.AVARIA
                 || o.getTipo() == TipoOcorrencia.EXTRAVIO
                 || o.getTipo() == TipoOcorrencia.OUTROS;
-        if (exigeDescricao && (o.getDescricao() == null || o.getDescricao().trim().isEmpty())) {
+        if (exigeDescricao && (o.getDescricao() == null || o.getDescricao().trim().isEmpty()))
             throw new FreteException("Descrição é obrigatória para o tipo de ocorrência selecionado.");
-        }
 
         if (o.getTipo() == TipoOcorrencia.ENTREGA_REALIZADA) {
             if (o.getNomeRecebedor() == null || o.getNomeRecebedor().trim().isEmpty())

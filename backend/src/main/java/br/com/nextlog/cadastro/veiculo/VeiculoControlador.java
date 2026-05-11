@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/veiculos/*")
 public class VeiculoControlador extends HttpServlet {
@@ -52,6 +53,21 @@ public class VeiculoControlador extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        String acao = req.getPathInfo();
+        if (acao == null) acao = "/";
+
+        if (acao.startsWith("/excluir/")) {
+            try {
+                Long id = Long.valueOf(acao.substring("/excluir/".length()));
+                veiculoBO.excluir(id);
+                resp.sendRedirect(req.getContextPath() + "/veiculos");
+            } catch (NegocioException e) {
+                req.setAttribute("erro", e.getMessage());
+                listar(req, resp);
+            }
+            return;
+        }
+
         try {
             Veiculo v = bind(req);
             veiculoBO.salvar(v);
@@ -64,7 +80,8 @@ public class VeiculoControlador extends HttpServlet {
         }
     }
 
-    private void listar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void listar(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String filtro = req.getParameter("filtro");
         int pagina = parseIntOu(req.getParameter("pagina"), 1);
 
@@ -72,9 +89,15 @@ public class VeiculoControlador extends HttpServlet {
         int total = veiculoBO.contar(filtro);
         int totalPaginas = (int) Math.ceil((double) total / PAGE_SIZE);
 
-        req.setAttribute("veiculos", lista);
-        req.setAttribute("filtro", filtro);
-        req.setAttribute("pagina", pagina);
+        Map<StatusVeiculo, Integer> totaisPorStatus = veiculoBO.contarPorStatus();
+        req.setAttribute("totalDisponiveis",  totaisPorStatus.getOrDefault(StatusVeiculo.DISPONIVEL,    0));
+        req.setAttribute("totalEmViagem",     totaisPorStatus.getOrDefault(StatusVeiculo.EM_VIAGEM,     0));
+        req.setAttribute("totalEmManutencao", totaisPorStatus.getOrDefault(StatusVeiculo.EM_MANUTENCAO, 0));
+        req.setAttribute("totalVeiculos",     total);
+
+        req.setAttribute("veiculos",     lista);
+        req.setAttribute("filtro",       filtro);
+        req.setAttribute("pagina",       pagina);
         req.setAttribute("totalPaginas", Math.max(totalPaginas, 1));
         req.getRequestDispatcher("/WEB-INF/views/cadastro/veiculo/lista.jsp").forward(req, resp);
     }

@@ -7,7 +7,9 @@ import br.com.nextlog.util.CpfValidator;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +30,13 @@ public class MotoristaBO {
 
             if (m.getStatus() == null) m.setStatus(StatusMotorista.ATIVO);
 
+            if (m.getCep() != null && !m.getCep().trim().isEmpty()) {
+                m.setCep(m.getCep().replaceAll("\\D", ""));
+            }
+            if (m.getUf() != null && !m.getUf().trim().isEmpty()) {
+                m.setUf(m.getUf().toUpperCase());
+            }
+
             if (m.getId() != null && m.getStatus() == StatusMotorista.INATIVO
                     && motoristaDAO.possuiFreteAtivo(m.getId())) {
                 throw new CadastroException("Não é permitido inativar motorista com frete em andamento.");
@@ -39,6 +48,30 @@ public class MotoristaBO {
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Erro ao salvar motorista", e);
             throw new NegocioException("Erro ao salvar motorista. Tente novamente.");
+        }
+    }
+
+    public void atualizarDisponibilidade(Long idMotorista, boolean disponivel) {
+        try {
+            if (disponivel && motoristaDAO.possuiFreteEmAndamento(idMotorista)) {
+                throw new CadastroException("Motorista possui frete em andamento e não pode ser marcado como disponível.");
+            }
+            motoristaDAO.atualizarDisponibilidade(idMotorista, disponivel);
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao atualizar disponibilidade do motorista", e);
+            throw new NegocioException("Erro ao atualizar disponibilidade.");
+        }
+    }
+
+    public void excluir(Long id) {
+        try {
+            if (motoristaDAO.possuiFreteAtivo(id)) {
+                throw new CadastroException("Motorista possui fretes ativos e não pode ser excluído.");
+            }
+            motoristaDAO.excluir(id);
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao excluir motorista", e);
+            throw new NegocioException("Erro ao excluir motorista.");
         }
     }
 
@@ -75,6 +108,28 @@ public class MotoristaBO {
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Erro ao listar motoristas ativos", e);
             throw new NegocioException("Erro ao listar motoristas ativos.");
+        }
+    }
+
+    public Map<StatusMotorista, Integer> contarPorStatus() {
+        try {
+            Map<StatusMotorista, Integer> totais = new EnumMap<>(StatusMotorista.class);
+            for (StatusMotorista s : StatusMotorista.values()) {
+                totais.put(s, motoristaDAO.contarPorStatus(s));
+            }
+            return totais;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao contar motoristas por status", e);
+            throw new NegocioException("Erro ao contar motoristas por status.");
+        }
+    }
+
+    public int contarCnhVencida() {
+        try {
+            return motoristaDAO.contarCnhVencida();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao contar motoristas com CNH vencida", e);
+            throw new NegocioException("Erro ao contar motoristas com CNH vencida.");
         }
     }
 

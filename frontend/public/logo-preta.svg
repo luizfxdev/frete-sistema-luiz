@@ -1,0 +1,47 @@
+<!-- NEXTLOG • BLACK VERSION • TRANSPARENT BACKGROUND -->
+<svg width="760" height="180" viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- ICON / N -->
+  <g transform="translate(18,26)"
+     stroke="#000000"
+     stroke-width="14"
+     fill="none"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+
+    <!-- LEFT PILLAR -->
+    <path d="M22 118 L22 18"/>
+
+    <!-- DIAGONAL -->
+    <path d="M22 18 L108 118"/>
+
+    <!-- RIGHT PILLAR -->
+    <path d="M108 118 L108 18"/>
+
+    <!-- HUB NODES -->
+    <circle cx="22" cy="18" r="9" fill="#000000" stroke="none"/>
+    <circle cx="22" cy="118" r="9" fill="#000000" stroke="none"/>
+    <circle cx="108" cy="18" r="9" fill="#000000" stroke="none"/>
+    <circle cx="108" cy="118" r="9" fill="#000000" stroke="none"/>
+
+  </g>
+
+  <!-- TEXT -->
+  <text x="150"
+        y="122"
+        fill="#000000"
+        font-family="Helvetica, Arial, sans-serif"
+        letter-spacing="-3">
+
+    <!-- EXT -->
+    <tspan font-weight="900" font-size="96">ext</tspan>
+
+    <!-- LOG -->
+    <tspan
+      font-family="Inter, Helvetica, Arial, sans-serif"
+      font-weight="400"
+      font-size="96">Log</tspan>
+
+  </text>
+
+</svg>

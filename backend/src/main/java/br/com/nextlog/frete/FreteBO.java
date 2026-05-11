@@ -17,8 +17,10 @@ import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,7 +80,7 @@ public class FreteBO {
 
             freteDAO.atualizarStatus(conn, idFrete, StatusFrete.SAIDA_CONFIRMADA);
             freteDAO.atualizarDataSaida(conn, idFrete, Timestamp.valueOf(LocalDateTime.now()));
-            veiculoDAO.atualizarStatus(conn, f.getIdVeiculo(), StatusVeiculo.EM_VIAGEM);
+            veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.EM_VIAGEM, conn);
 
             conn.commit();
         } catch (NegocioException ne) {
@@ -109,7 +111,8 @@ public class FreteBO {
             freteDAO.atualizarStatus(conn, idFrete, StatusFrete.EM_TRANSITO);
             conn.commit();
         } catch (NegocioException ne) {
-            rollback(conn); throw ne;
+            rollback(conn);
+            throw ne;
         } catch (SQLException e) {
             rollback(conn);
             LOG.log(Level.SEVERE, "Erro ao marcar em trânsito", e);
@@ -134,11 +137,12 @@ public class FreteBO {
 
             freteDAO.atualizarStatus(conn, idFrete, StatusFrete.ENTREGUE);
             freteDAO.atualizarDataEntrega(conn, idFrete, Timestamp.valueOf(LocalDateTime.now()));
-            veiculoDAO.atualizarStatus(conn, f.getIdVeiculo(), StatusVeiculo.DISPONIVEL);
+            veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.DISPONIVEL, conn);
 
             conn.commit();
         } catch (NegocioException ne) {
-            rollback(conn); throw ne;
+            rollback(conn);
+            throw ne;
         } catch (SQLException e) {
             rollback(conn);
             LOG.log(Level.SEVERE, "Erro ao registrar entrega", e);
@@ -162,11 +166,12 @@ public class FreteBO {
                 throw new FreteException("Só é possível registrar não entrega em frete EM TRÂNSITO.");
 
             freteDAO.atualizarStatus(conn, idFrete, StatusFrete.NAO_ENTREGUE);
-            veiculoDAO.atualizarStatus(conn, f.getIdVeiculo(), StatusVeiculo.DISPONIVEL);
+            veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.DISPONIVEL, conn);
 
             conn.commit();
         } catch (NegocioException ne) {
-            rollback(conn); throw ne;
+            rollback(conn);
+            throw ne;
         } catch (SQLException e) {
             rollback(conn);
             LOG.log(Level.SEVERE, "Erro ao registrar não entrega", e);
@@ -199,7 +204,8 @@ public class FreteBO {
             freteDAO.atualizarStatus(conn, idFrete, StatusFrete.CANCELADO);
             conn.commit();
         } catch (NegocioException ne) {
-            rollback(conn); throw ne;
+            rollback(conn);
+            throw ne;
         } catch (SQLException e) {
             rollback(conn);
             LOG.log(Level.SEVERE, "Erro ao cancelar frete", e);
@@ -245,12 +251,39 @@ public class FreteBO {
         }
     }
 
-    public List<Frete> listarRomaneio(Long idMotorista, java.time.LocalDate data) {
+    public List<Frete> listarRomaneio(Long idMotorista, LocalDate data) {
         try {
             return freteDAO.listarPorMotoristaEData(idMotorista, data);
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Erro ao listar romaneio", e);
             throw new NegocioException("Erro ao gerar romaneio.");
+        }
+    }
+
+    public String resumoMensalJson(int meses) {
+        try {
+            List<Map<String, Object>> dados = freteDAO.contarMensalUltimosMeses(meses);
+
+            StringBuilder mesesJson      = new StringBuilder("[");
+            StringBuilder concluidosJson = new StringBuilder("[");
+            StringBuilder canceladosJson = new StringBuilder("[");
+
+            for (int i = 0; i < dados.size(); i++) {
+                Map<String, Object> d = dados.get(i);
+                String sep = i < dados.size() - 1 ? "," : "";
+                mesesJson.append("\"").append(d.get("mes")).append("\"").append(sep);
+                concluidosJson.append(d.get("concluidos")).append(sep);
+                canceladosJson.append(d.get("cancelados")).append(sep);
+            }
+
+            mesesJson.append("]");
+            concluidosJson.append("]");
+            canceladosJson.append("]");
+
+            return mesesJson + "|" + concluidosJson + "|" + canceladosJson;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao gerar resumo mensal", e);
+            throw new NegocioException("Erro ao gerar resumo mensal.");
         }
     }
 
