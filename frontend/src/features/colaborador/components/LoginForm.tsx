@@ -26,7 +26,7 @@ export function LoginForm() {
     setLoading(true);
     setError(null);
     try {
-      const res = await post<LoginResponse>("/api/auth/login", form);
+      const res = await post<LoginResponse>("/auth/login", form);
       setUsuario({ id: res.id, nome: res.nome, email: res.email, role: res.role }, res.token);
       
       await new Promise(resolve => setTimeout(resolve, 100));

@@ -108,12 +108,8 @@
        class="nl-nav-link ${fn:contains(uri, '/fretes') ? 'active' : ''}">
       <i class="bi bi-box-seam-fill"></i> Fretes
     </a>
-    <a href="${pageContext.request.contextPath}/rotas"
-       class="nl-nav-link ${fn:contains(uri, '/rotas') ? 'active' : ''}">
-      <i class="bi bi-signpost-split-fill"></i> Tabela de Rotas
-    </a>
-
-    <div class="nl-sidebar-divider"></div>
+     
+     <div class="nl-sidebar-divider"></div>
     <span class="nl-nav-section-label">Cadastros</span>
     <a href="${pageContext.request.contextPath}/clientes"
        class="nl-nav-link ${fn:contains(uri, '/clientes') ? 'active' : ''}">

@@ -152,8 +152,10 @@ public class FreteBO {
         }
     }
 
-    public void registrarNaoEntrega(Long idFrete) {
+    public void registrarNaoEntrega(Long idFrete, String motivo) {
         if (idFrete == null) throw new FreteException("ID do frete é obrigatório.");
+        if (motivo == null || motivo.trim().isEmpty())
+            throw new FreteException("Motivo da não entrega é obrigatório.");
 
         Connection conn = null;
         try {

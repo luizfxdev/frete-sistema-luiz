@@ -81,25 +81,35 @@ public class MotoristaDAO {
     }
 
     public boolean possuiFreteAtivo(Long idMotorista) throws SQLException {
-        String sql = "SELECT 1 FROM frete WHERE id_motorista=? AND status IN ('EMITIDO','SAIDA_CONFIRMADA','EM_TRANSITO') LIMIT 1";
+        String sql = "SELECT COUNT(*) as total FROM frete " +
+                     "WHERE id_motorista = ? " +
+                     "  AND status IN ('EMITIDO', 'SAIDA_CONFIRMADA', 'EM_TRANSITO')";
         try (Connection conn = ConnectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idMotorista);
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                if (rs.next()) {
+                    return rs.getInt("total") > 0;
+                }
             }
         }
+        return false;
     }
 
     public boolean possuiFreteEmAndamento(Long idMotorista) throws SQLException {
-        String sql = "SELECT 1 FROM frete WHERE id_motorista=? AND status IN ('SAIDA_CONFIRMADA','EM_TRANSITO') LIMIT 1";
+        String sql = "SELECT COUNT(*) as total FROM frete " +
+                     "WHERE id_motorista = ? " +
+                     "  AND status IN ('SAIDA_CONFIRMADA', 'EM_TRANSITO')";
         try (Connection conn = ConnectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idMotorista);
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                if (rs.next()) {
+                    return rs.getInt("total") > 0;
+                }
             }
         }
+        return false;
     }
 
     public List<Motorista> listar(String filtro, int pagina, int tamanhoPagina) throws SQLException {
