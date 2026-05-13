@@ -9,6 +9,8 @@ import br.com.nextlog.cadastro.veiculo.VeiculoBO;
 import br.com.nextlog.enums.StatusFrete;
 import br.com.nextlog.exception.NegocioException;
 import br.com.nextlog.frete.ocorrencia.OcorrenciaBO;
+import br.com.nextlog.rota.TabelaFreteRota;
+import br.com.nextlog.rota.TabelaFreteRotaBO;
 import br.com.nextlog.util.JsonResponse;
 
 import javax.servlet.ServletException;
@@ -33,6 +35,7 @@ public class FreteControlador extends HttpServlet {
     private final MotoristaBO motoristaBO = new MotoristaBO();
     private final VeiculoBO veiculoBO = new VeiculoBO();
     private final OcorrenciaBO ocorrenciaBO = new OcorrenciaBO();
+    private final TabelaFreteRotaBO tabelaFreteRotaBO = new TabelaFreteRotaBO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -54,6 +57,33 @@ public class FreteControlador extends HttpServlet {
                 dados.put("razaoSocial", c.getRazaoSocial());
                 dados.put("municipio", c.getMunicipio());
                 dados.put("uf", c.getUf());
+                JsonResponse.ok(resp, dados);
+                return;
+            }
+            if (acao.startsWith("/api/rota")) {
+                String municipioOrigem = req.getParameter("municipioOrigem");
+                String ufOrigem = req.getParameter("ufOrigem");
+                String municipioDestino = req.getParameter("municipioDestino");
+                String ufDestino = req.getParameter("ufDestino");
+
+                if (municipioOrigem == null || ufOrigem == null || municipioDestino == null || ufDestino == null) {
+                    JsonResponse.erro(resp, HttpServletResponse.SC_BAD_REQUEST, "Parâmetros faltando.");
+                    return;
+                }
+
+                TabelaFreteRota rota = tabelaFreteRotaBO.buscarRota(municipioOrigem, ufOrigem, municipioDestino, ufDestino);
+
+                if (rota == null) {
+                    Map<String, Object> noRota = new LinkedHashMap<>();
+                    noRota.put("valorBase", null);
+                    noRota.put("valorPorKg", null);
+                    JsonResponse.ok(resp, noRota);
+                    return;
+                }
+
+                Map<String, Object> dados = new LinkedHashMap<>();
+                dados.put("valorBase", rota.getValorBase());
+                dados.put("valorPorKg", rota.getValorPorKg());
                 JsonResponse.ok(resp, dados);
                 return;
             }
@@ -106,7 +136,8 @@ public class FreteControlador extends HttpServlet {
             }
             if (acao.startsWith("/registrar-nao-entrega/")) {
                 Long id = Long.valueOf(acao.substring("/registrar-nao-entrega/".length()));
-                freteBO.registrarNaoEntrega(id);
+                String motivo = req.getParameter("motivo");
+                freteBO.registrarNaoEntrega(id, motivo);
                 resp.sendRedirect(req.getContextPath() + "/fretes/detalhe/" + id);
                 return;
             }

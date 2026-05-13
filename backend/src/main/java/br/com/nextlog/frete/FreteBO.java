@@ -152,8 +152,10 @@ public class FreteBO {
         }
     }
 
-    public void registrarNaoEntrega(Long idFrete) {
+    public void registrarNaoEntrega(Long idFrete, String motivo) {
         if (idFrete == null) throw new FreteException("ID do frete é obrigatório.");
+        if (motivo == null || motivo.trim().isEmpty())
+            throw new FreteException("Motivo da não entrega é obrigatório.");
 
         Connection conn = null;
         try {
@@ -220,6 +222,27 @@ public class FreteBO {
             return freteDAO.buscarPorId(id);
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Erro ao buscar frete", e);
+            throw new NegocioException("Erro ao buscar frete.");
+        }
+    }
+
+    public Frete buscarPorNumero(String numero) {
+        if (numero == null || numero.trim().isEmpty()) {
+            throw new FreteException("Número do frete é obrigatório.");
+        }
+        
+        if (!numero.matches("^FRT-\\d{4}-\\d{5}$")) {
+            throw new FreteException("Formato inválido. Use o formato: FRT-AAAA-NNNNN");
+        }
+
+        try {
+            Frete frete = freteDAO.buscarPorNumero(numero.toUpperCase());
+            if (frete == null) {
+                throw new FreteException("Frete não encontrado.");
+            }
+            return frete;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao buscar frete por número", e);
             throw new NegocioException("Erro ao buscar frete.");
         }
     }

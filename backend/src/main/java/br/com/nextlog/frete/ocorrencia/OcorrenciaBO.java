@@ -48,22 +48,7 @@ public class OcorrenciaBO {
                 throw new FreteException("Data/hora da ocorrência não pode ser anterior à última registrada.");
             }
 
-            if (o.getTipo() == TipoOcorrencia.SAIDA_PATIO && f.getStatus() == StatusFrete.EMITIDO) {
-                freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.SAIDA_CONFIRMADA);
-                freteDAO.atualizarDataSaida(conn, f.getId(), Timestamp.valueOf(o.getDataHora()));
-                veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.EM_VIAGEM, conn);
-            }
-
-            if (o.getTipo() == TipoOcorrencia.EM_ROTA && f.getStatus() == StatusFrete.SAIDA_CONFIRMADA) {
-                freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.EM_TRANSITO);
-            }
-
-            if (o.getTipo() == TipoOcorrencia.ENTREGA_REALIZADA) {
-                freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.ENTREGUE);
-                freteDAO.atualizarDataEntrega(conn, f.getId(), Timestamp.valueOf(o.getDataHora()));
-                veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.DISPONIVEL, conn);
-            }
-
+            processarTransicaoStatus(conn, f, o);
             Long id = ocorrenciaDAO.inserir(conn, o);
             conn.commit();
             return id;
@@ -85,6 +70,38 @@ public class OcorrenciaBO {
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Erro ao listar ocorrências", e);
             throw new NegocioException("Erro ao listar ocorrências.");
+        }
+    }
+
+    private void processarTransicaoStatus(Connection conn, Frete f, OcorrenciaFrete o) throws SQLException {
+        switch (o.getTipo()) {
+            case SAIDA_PATIO:
+                if (f.getStatus() == StatusFrete.EMITIDO) {
+                    freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.SAIDA_CONFIRMADA);
+                    freteDAO.atualizarDataSaida(conn, f.getId(), Timestamp.valueOf(o.getDataHora()));
+                    veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.EM_VIAGEM, conn);
+                }
+                break;
+            case EM_ROTA:
+                if (f.getStatus() == StatusFrete.SAIDA_CONFIRMADA) {
+                    freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.EM_TRANSITO);
+                }
+                break;
+            case ENTREGA_REALIZADA:
+                if (f.getStatus() == StatusFrete.EM_TRANSITO) {
+                    freteDAO.atualizarStatus(conn, f.getId(), StatusFrete.ENTREGUE);
+                    freteDAO.atualizarDataEntrega(conn, f.getId(), Timestamp.valueOf(o.getDataHora()));
+                    veiculoDAO.atualizarStatus(f.getIdVeiculo(), StatusVeiculo.DISPONIVEL, conn);
+                }
+                break;
+            case TENTATIVA_ENTREGA:
+                break;
+            case AVARIA:
+            case EXTRAVIO:
+            case OUTROS:
+                break;
+            default:
+                break;
         }
     }
 

@@ -103,6 +103,66 @@
   .nl-chart-title { font-size: 0.95rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; }
   #status-timeline { width: 100%; height: 280px; }
   
+  .modal-overlay { 
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.5); 
+    z-index: 1000; 
+    align-items: center; 
+    justify-content: center;
+  }
+  
+  .modal-overlay.active { display: flex; }
+  
+  .modal-content { 
+    background: white; 
+    border-radius: 8px; 
+    padding: 2rem; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+    max-width: 500px; 
+    width: 100%;
+  }
+  
+  .modal-title { 
+    font-size: 1.25rem; 
+    font-weight: 600; 
+    color: #0f172a; 
+    margin-bottom: 1rem; 
+  }
+  
+  .modal-field { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.5rem; 
+    margin-bottom: 1.5rem;
+  }
+  
+  .modal-field label { 
+    font-size: 0.875rem; 
+    font-weight: 600; 
+    color: #1f2937;
+  }
+  
+  .modal-field textarea { 
+    padding: 0.75rem; 
+    border: 1px solid #d1d5db; 
+    border-radius: 6px; 
+    font-size: 0.875rem; 
+    font-family: 'Avenir Next', sans-serif;
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  .modal-actions { 
+    display: flex; 
+    gap: 0.75rem; 
+    justify-content: flex-end;
+  }
+  
   @media (max-width: 1024px) {
     .nl-main { padding: 1.5rem; }
     .nl-container { max-width: 100%; }
@@ -275,11 +335,9 @@
               <i class="bi bi-check2-circle"></i> Registrar entrega
             </button>
           </form>
-          <form method="post" action="${pageContext.request.contextPath}/fretes/registrar-nao-entrega/${frete.id}" style="display: inline;">
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Registrar como não entregue?');">
-              <i class="bi bi-exclamation-circle"></i> Não entregue
-            </button>
-          </form>
+          <button type="button" class="btn btn-danger" onclick="abrirModalNaoEntrega();">
+            <i class="bi bi-exclamation-circle"></i> Não entregue
+          </button>
         </c:if>
         <c:if test="${frete.status != 'ENTREGUE' && frete.status != 'NAO_ENTREGUE' && frete.status != 'CANCELADO'}">
           <a href="${pageContext.request.contextPath}/ocorrencias/novo/${frete.id}" class="btn btn-secondary">
@@ -330,7 +388,34 @@
   </div>
 </main>
 
+<div id="modalNaoEntrega" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-title">Registrar Não Entrega</div>
+    <form method="post" action="${pageContext.request.contextPath}/fretes/registrar-nao-entrega/${frete.id}">
+      <div class="modal-field">
+        <label for="motivo">Motivo da não entrega *</label>
+        <textarea id="motivo" name="motivo" required placeholder="Descreva o motivo da tentativa frustrada de entrega"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="fecharModalNaoEntrega();">Cancelar</button>
+        <button type="submit" class="btn btn-danger">Confirmar não entrega</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <jsp:include page="/WEB-INF/views/shared/footer.jsp"/>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.0/dist/apexcharts.min.js"></script>
 <script src="${pageContext.request.contextPath}/static/js/nl-confirm.js"></script>
 <script src="${pageContext.request.contextPath}/static/js/frota-timeline.js"></script>
+<script>
+  function abrirModalNaoEntrega() {
+    document.getElementById('modalNaoEntrega').classList.add('active');
+  }
+  function fecharModalNaoEntrega() {
+    document.getElementById('modalNaoEntrega').classList.remove('active');
+  }
+  document.getElementById('modalNaoEntrega').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalNaoEntrega();
+  });
+</script>

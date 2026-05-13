@@ -18,9 +18,25 @@ public class LoginControlador extends HttpServlet {
     private final LoginBO loginBO = new LoginBO();
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String path = req.getServletPath();
+        
+        if ("/auth/logout".equals(path)) {
+            loginBO.encerrarSessao(req.getSession(false));
+            Map<String, Boolean> payload = new HashMap<>();
+            payload.put("sucesso", true);
+            JsonResponse.ok(resp, payload);
+            return;
+        }
+        
+        JsonResponse.erro(resp, HttpServletResponse.SC_BAD_REQUEST, 
+            "Use POST para fazer login.");
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getServletPath();
-
+        
         if ("/auth/logout".equals(path)) {
             loginBO.encerrarSessao(req.getSession(false));
             Map<String, Boolean> payload = new HashMap<>();
@@ -36,13 +52,12 @@ public class LoginControlador extends HttpServlet {
 
             if (email == null || senha == null) {
                 JsonResponse.erro(resp, HttpServletResponse.SC_BAD_REQUEST,
-                        "E-mail e senha são obrigatórios.");
+                    "E-mail e senha são obrigatórios.");
                 return;
             }
 
             HttpSession session = req.getSession(true);
             LoginUsuario u = loginBO.autenticar(email, senha, session);
-
             String token = session.getId();
 
             Map<String, Object> payload = new HashMap<>();
@@ -51,14 +66,14 @@ public class LoginControlador extends HttpServlet {
             payload.put("email", u.getEmail());
             payload.put("role", u.getRole());
             payload.put("token", token);
-
+            
             JsonResponse.ok(resp, payload);
         } catch (AuthException e) {
             JsonResponse.erro(resp, HttpServletResponse.SC_UNAUTHORIZED,
-                    "E-mail ou senha inválidos.");
+                "E-mail ou senha inválidos.");
         } catch (Exception e) {
             JsonResponse.erro(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Erro ao autenticar.");
+                "Erro ao autenticar.");
         }
     }
 
