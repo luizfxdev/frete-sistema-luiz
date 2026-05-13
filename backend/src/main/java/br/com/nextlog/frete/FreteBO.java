@@ -226,6 +226,27 @@ public class FreteBO {
         }
     }
 
+    public Frete buscarPorNumero(String numero) {
+        if (numero == null || numero.trim().isEmpty()) {
+            throw new FreteException("Número do frete é obrigatório.");
+        }
+        
+        if (!numero.matches("^FRT-\\d{4}-\\d{5}$")) {
+            throw new FreteException("Formato inválido. Use o formato: FRT-AAAA-NNNNN");
+        }
+
+        try {
+            Frete frete = freteDAO.buscarPorNumero(numero.toUpperCase());
+            if (frete == null) {
+                throw new FreteException("Frete não encontrado.");
+            }
+            return frete;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Erro ao buscar frete por número", e);
+            throw new NegocioException("Erro ao buscar frete.");
+        }
+    }
+
     public List<Frete> listar(String filtro, String statusFiltro, int pagina, int tamanhoPagina) {
         try {
             return freteDAO.listar(filtro, statusFiltro, pagina, Math.max(tamanhoPagina, 10));
