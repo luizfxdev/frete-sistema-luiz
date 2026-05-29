@@ -1,8 +1,8 @@
 "use client";
-
 import { usePerformanceMotorista } from "@/features/motorista/hooks/useMotorista";
 import { MotoristaEntregasLineChart, type MotoristaEntregaDia } from "@/features/performance/components/Motoristaperformancecharts";
 import { KpiCard } from "@/features/dashboard/components/KpiCard";
+import { Truck, Award, RotateCw } from "lucide-react";
 
 interface PerformanceData {
   mes: string;
@@ -86,22 +86,28 @@ export default function MotoristaPerformancePage() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <KpiCard
-              label="Total entregue"
-              value={totais.entregas.toLocaleString("pt-BR")}
-              icon="bi-truck-front-fill"
-              color="#005eff"
+              title="Total entregue"
+              value={totais.entregas}
+              icon={<Truck size={24} />}
+              backgroundColor="bg-white"
+              iconBackgroundColor="bg-blue-100"
+              textColor="text-blue-600"
             />
             <KpiCard
-              label="Taxa de sucesso"
+              title="Taxa de sucesso"
               value={`${taxaMediaFinal}%`}
-              icon="bi-award-fill"
-              color="#22c55e"
+              icon={<Award size={24} />}
+              backgroundColor="bg-white"
+              iconBackgroundColor="bg-green-100"
+              textColor="text-green-600"
             />
             <KpiCard
-              label="Em andamento"
-              value={totais.emAndamento.toString()}
-              icon="bi-arrow-repeat"
-              color="#f59e0b"
+              title="Em andamento"
+              value={totais.emAndamento}
+              icon={<RotateCw size={24} />}
+              backgroundColor="bg-white"
+              iconBackgroundColor="bg-amber-100"
+              textColor="text-amber-600"
             />
           </div>
 

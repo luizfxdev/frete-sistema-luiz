@@ -1,22 +1,30 @@
 import type { StatusEntrega } from "@/shared/types/api";
+import { StatusEntrega as StatusEntregaEnum } from "@/shared/types/api";
 
 const ETAPAS: { status: StatusEntrega; label: string; icon: string }[] = [
-  { status: "EMITIDO", label: "Emitido", icon: "bi-check-lg" },
-  { status: "SAIDA_CONFIRMADA", label: "Saída Confirmada", icon: "bi-check-lg" },
-  { status: "EM_TRANSITO", label: "Em Trânsito", icon: "bi-truck" },
-  { status: "ENTREGUE", label: "Entregue", icon: "bi-check-lg" },
+  { status: StatusEntregaEnum.EMITIDO, label: "Emitido", icon: "bi-check-lg" },
+  { status: StatusEntregaEnum.SAIDA_CONFIRMADA, label: "Saída Confirmada", icon: "bi-check-lg" },
+  { status: StatusEntregaEnum.EM_TRANSITO, label: "Em Trânsito", icon: "bi-truck" },
+  { status: StatusEntregaEnum.ENTREGUE, label: "Entregue", icon: "bi-check-lg" },
 ];
 
-const ORDEM: StatusEntrega[] = ["EMITIDO", "SAIDA_CONFIRMADA", "EM_TRANSITO", "ENTREGUE"];
+const ORDEM: StatusEntrega[] = [
+  StatusEntregaEnum.EMITIDO,
+  StatusEntregaEnum.SAIDA_CONFIRMADA,
+  StatusEntregaEnum.EM_TRANSITO,
+  StatusEntregaEnum.ENTREGUE,
+];
 
 function getEtapaState(etapa: StatusEntrega, statusAtual: StatusEntrega) {
   const idxEtapa = ORDEM.indexOf(etapa);
   const idxAtual = ORDEM.indexOf(statusAtual);
-  if (statusAtual === "NAO_ENTREGUE" || statusAtual === "CANCELADO") {
+
+  if (statusAtual === StatusEntregaEnum.NAO_ENTREGUE || statusAtual === StatusEntregaEnum.CANCELADO) {
     return idxEtapa < idxAtual ? "concluida" : idxEtapa === idxAtual ? "erro" : "pendente";
   }
+
   if (idxEtapa < idxAtual) return "concluida";
-  if (idxEtapa === idxAtual) return statusAtual === "EM_TRANSITO" ? "transito" : "concluida";
+  if (idxEtapa === idxAtual) return statusAtual === StatusEntregaEnum.EM_TRANSITO ? "transito" : "concluida";
   return "pendente";
 }
 
@@ -25,7 +33,7 @@ interface Props {
 }
 
 export function ProgressTimeline({ status }: Props) {
-  const isErro = status === "NAO_ENTREGUE" || status === "CANCELADO";
+  const isErro = status === StatusEntregaEnum.NAO_ENTREGUE || status === StatusEntregaEnum.CANCELADO;
 
   return (
     <div className="bg-[#1a1a2e] rounded-2xl p-8">
@@ -40,10 +48,8 @@ export function ProgressTimeline({ status }: Props) {
             backgroundColor: isErro ? "#ef4444" : "#005eff",
           }}
         />
-
         {ETAPAS.map(({ status: etapaStatus, label, icon }) => {
           const state = getEtapaState(etapaStatus, status);
-
           const dotStyle =
             state === "concluida"
               ? "bg-success border-success text-white"
@@ -71,12 +77,11 @@ export function ProgressTimeline({ status }: Props) {
           );
         })}
       </div>
-
       {isErro && (
         <div className="mt-6 flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
           <i className="bi bi-exclamation-triangle-fill text-red-500" />
           <span className="text-red-400 text-sm font-medium">
-            {status === "NAO_ENTREGUE" ? "Tentativa de entrega sem sucesso" : "Envio cancelado"}
+            {status === StatusEntregaEnum.NAO_ENTREGUE ? "Tentativa de entrega sem sucesso" : "Envio cancelado"}
           </span>
         </div>
       )}

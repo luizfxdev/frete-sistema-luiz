@@ -65,7 +65,7 @@ export function CandidaturaForm() {
       return;
     }
     setErrors({});
-    await enviar(parsed.data);
+    await enviar(parsed.data as any);
   };
 
   const field = (

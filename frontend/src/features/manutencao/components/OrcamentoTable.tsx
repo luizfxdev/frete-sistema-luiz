@@ -1,120 +1,126 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import type { ItemOrcamento } from "@/features/manutencao/adapters/manutencaoService";
-import { formatCurrency } from "@/core/utils/formatters";
+import { useState } from 'react';
+import { EditOrcamentoModal } from './EditOrcamentoModal';
+import type { OrcamentoManutencaoItem } from '@/shared/types/api';
 
 interface Props {
-  itens: ItemOrcamento[];
-  onSalvar: (itens: ItemOrcamento[]) => Promise<void>;
+  itens: OrcamentoManutencaoItem[];
+  onSalvar: (item: OrcamentoManutencaoItem) => Promise<void>;
 }
 
-const ITEM_VAZIO: ItemOrcamento = { descricao: "", quantidade: 1, precoUnitario: 0 };
+export function OrcamentoTable({ itens, onSalvar }: Props) {
+  const [editando, setEditando] = useState<OrcamentoManutencaoItem | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-export function OrcamentoTable({ itens: initial, onSalvar }: Props) {
-  const [itens, setItens] = useState<ItemOrcamento[]>(initial);
-  const [saving, setSaving] = useState(false);
-
-  const total = itens.reduce((acc, i) => acc + i.quantidade * i.precoUnitario, 0);
-
-  const update = (idx: number, field: keyof ItemOrcamento, value: string | number) =>
-    setItens((prev) => prev.map((it, i) => (i === idx ? { ...it, [field]: value } : it)));
-
-  const adicionar = () => setItens((prev) => [...prev, { ...ITEM_VAZIO }]);
-  const remover = (idx: number) => setItens((prev) => prev.filter((_, i) => i !== idx));
-
-  const handleSalvar = async () => {
-    setSaving(true);
-    try { await onSalvar(itens); } finally { setSaving(false); }
+  const handleSalvar = async (item: OrcamentoManutencaoItem) => {
+    setIsSaving(true);
+    try {
+      await onSalvar(item);
+      setEditando(null);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
+  const total = itens.reduce((acc, item) => acc + (item.valorTotal || 0), 0);
+
+  if (!itens.length) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <i className="bi bi-inbox text-2xl mb-2 block" />
+        <p className="text-sm">Nenhum item de orçamento</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white/5 border border-white/7 rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-white/7 flex items-center justify-between">
-        <h3 className="text-sm font-bold text-white">Orçamento de Serviços</h3>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={adicionar}
-            className="flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent-light transition-colors"
-          >
-            <i className="bi bi-plus-circle" /> Adicionar item
-          </button>
-          <button
-            onClick={handleSalvar}
-            disabled={saving}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-xs font-semibold rounded-lg hover:bg-accent-dark transition-all disabled:opacity-50"
-          >
-            {saving ? <i className="bi bi-arrow-repeat animate-spin" /> : <i className="bi bi-floppy" />}
-            Salvar
-          </button>
+    <>
+      <div className="space-y-4">
+        <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50">
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">
+                  Descrição
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase">
+                  Qtd
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase">
+                  Valor Unit.
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase">
+                  Total
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase">
+                  Ação
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {itens.map((item) => (
+                <tr
+                  key={item.id}
+                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {item.descricao}
+                  </td>
+                  <td className="px-4 py-3 text-right text-sm text-gray-600">
+                    {item.quantidade?.toLocaleString('pt-BR', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                  <td className="px-4 py-3 text-right text-sm text-gray-600">
+                    {new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    }).format(item.precoUnitario || 0)}
+                  </td>
+                  <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
+                    {new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    }).format(item.valorTotal || 0)}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => setEditando(item)}
+                      className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                      Editar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex justify-end">
+          <div className="text-right">
+            <p className="text-xs font-bold text-gray-600 uppercase mb-1">Total</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(total)}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-white/6">
-              {["Descrição", "Qtd", "Preço Unit.", "Total", ""].map((h) => (
-                <th key={h} className="px-5 py-3 text-left text-xs font-bold uppercase tracking-widest text-white/30">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {itens.map((item, i) => (
-              <tr key={i} className="border-b border-white/4">
-                <td className="px-5 py-3">
-                  <input
-                    value={item.descricao}
-                    onChange={(e) => update(i, "descricao", e.target.value)}
-                    placeholder="Ex: Troca de óleo"
-                    className="w-full bg-transparent text-white/80 text-sm outline-none border-b border-white/10 focus:border-accent transition-colors pb-0.5"
-                  />
-                </td>
-                <td className="px-5 py-3 w-20">
-                  <input
-                    type="number"
-                    min={1}
-                    value={item.quantidade}
-                    onChange={(e) => update(i, "quantidade", Number(e.target.value))}
-                    className="w-full bg-transparent text-white/80 text-sm outline-none border-b border-white/10 focus:border-accent transition-colors pb-0.5"
-                  />
-                </td>
-                <td className="px-5 py-3 w-32">
-                  <input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={item.precoUnitario}
-                    onChange={(e) => update(i, "precoUnitario", Number(e.target.value))}
-                    className="w-full bg-transparent text-white/80 text-sm outline-none border-b border-white/10 focus:border-accent transition-colors pb-0.5"
-                  />
-                </td>
-                <td className="px-5 py-3 text-white/70 font-medium">
-                  {formatCurrency(item.quantidade * item.precoUnitario)}
-                </td>
-                <td className="px-5 py-3">
-                  <button onClick={() => remover(i)} className="text-white/20 hover:text-red-400 transition-colors">
-                    <i className="bi bi-trash3" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="border-t border-white/10 bg-white/3">
-              <td colSpan={3} className="px-5 py-4 text-right text-xs font-bold uppercase tracking-widest text-white/40">
-                Total
-              </td>
-              <td className="px-5 py-4 font-bold text-white text-base">
-                {formatCurrency(total)}
-              </td>
-              <td />
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
+      {editando && (
+        <EditOrcamentoModal
+          item={editando}
+          isOpen={!!editando}
+          onClose={() => setEditando(null)}
+          onSalvar={handleSalvar}
+          isLoading={isSaving}
+        />
+      )}
+    </>
   );
 }

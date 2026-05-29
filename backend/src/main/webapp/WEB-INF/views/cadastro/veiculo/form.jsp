@@ -18,15 +18,26 @@
     <form method="post" action="${pageContext.request.contextPath}/veiculos" style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px;">
         <input type="hidden" name="id" value="<c:out value='${veiculo.id}'/>"/>
 
-        <!-- Seção: Identificação -->
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 24px;">
             <div style="display: flex; flex-direction: column;">
                 <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Placa <span style="color: #dc2626;">*</span></label>
-                <input type="text" name="placa" required maxlength="7" data-mask="placa" value="<c:out value='${veiculo.placa}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+                <input type="text" name="placa" required maxlength="7" value="<c:out value='${veiculo.placa}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
             </div>
             <div style="display: flex; flex-direction: column;">
                 <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">RNTRC</label>
                 <input type="text" name="rntrc" value="<c:out value='${veiculo.rntrc}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Marca <span style="color: #dc2626;">*</span></label>
+                <input type="text" name="marca" required maxlength="100" value="<c:out value='${veiculo.marca}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Modelo <span style="color: #dc2626;">*</span></label>
+                <input type="text" name="modelo" required maxlength="100" value="<c:out value='${veiculo.modelo}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Cor <span style="color: #dc2626;">*</span></label>
+                <input type="text" name="cor" required maxlength="50" value="<c:out value='${veiculo.cor}'/>" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Avenir Next', sans-serif;">
             </div>
             <div style="display: flex; flex-direction: column;">
                 <label style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-family: 'Avenir Next', sans-serif;">Ano de fabricação <span style="color: #dc2626;">*</span></label>
@@ -43,7 +54,6 @@
             </div>
         </div>
 
-        <!-- Seção: Especificações -->
         <div style="border-top: 1px solid #d1d5db; padding-top: 24px; margin-bottom: 24px;">
             <h3 style="font-size: 16px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0; font-family: 'Avenir Next', sans-serif;">Especificações</h3>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
@@ -62,7 +72,6 @@
             </div>
         </div>
 
-        <!-- Seção: Status -->
         <div style="border-top: 1px solid #d1d5db; padding-top: 24px; margin-bottom: 24px;">
             <h3 style="font-size: 16px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0; font-family: 'Avenir Next', sans-serif;">Status</h3>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
@@ -79,9 +88,20 @@
 
         <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #d1d5db; padding-top: 24px;">
             <a href="${pageContext.request.contextPath}/veiculos" style="background-color: #d3d3d3; color: #333; padding: 10px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; font-family: 'Avenir Next', sans-serif; display: inline-block;">Cancelar</a>
-            <button type="submit" style="background-color: #2563eb; color: white; padding: 10px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Avenir Next', sans-serif;">Salvar</button>
+            <button type="submit" style="background-color: #2563eb; color: white; padding: 10px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Avenir Next', sans-serif;" onclick="return confirmarStatus(this);">Salvar</button>
         </div>
     </form>
 </main>
+
+<script>
+function confirmarStatus(btn) {
+    const statusSelect = document.querySelector('select[name="status"]');
+    const statusValue = statusSelect.value;
+    if (statusValue === 'EM_MANUTENCAO') {
+        return confirm('Tem certeza que deseja definir este veículo como EM MANUTENÇÃO?');
+    }
+    return true;
+}
+</script>
 
 <jsp:include page="/WEB-INF/views/shared/footer.jsp"/>

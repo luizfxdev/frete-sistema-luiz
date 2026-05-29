@@ -1,23 +1,26 @@
 package br.com.nextlog.filter;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter("/*")
 public class AuthFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest  request  = (HttpServletRequest)  req;
+        HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
-        String uri         = request.getRequestURI();
+        String uri = request.getRequestURI();
         String contextPath = request.getContextPath();
-        String method      = request.getMethod();
+        String method = request.getMethod();
+
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            chain.doFilter(req, res);
+            return;
+        }
 
         boolean isPublic = uri.equals(contextPath + "/")
                 || uri.startsWith(contextPath + "/auth/")
@@ -55,6 +58,11 @@ public class AuthFilter implements Filter {
         chain.doFilter(req, res);
     }
 
-    @Override public void init(FilterConfig config) {}
-    @Override public void destroy() {}
+    @Override
+    public void init(FilterConfig config) {
+    }
+
+    @Override
+    public void destroy() {
+    }
 }

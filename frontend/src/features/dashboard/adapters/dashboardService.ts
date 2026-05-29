@@ -24,9 +24,9 @@ export interface DashboardIndicadores {
 }
 
 export async function buscarKpis(): Promise<DashboardKpis> {
-  return get<DashboardKpis>("/dashboard/kpis");
+  return get<DashboardKpis>("/api/dashboard/kpis");
 }
 
 export async function buscarIndicadores(): Promise<DashboardIndicadores> {
-  return get<DashboardIndicadores>("/dashboard/indicadores");
+  return get<DashboardIndicadores>("/api/dashboard/indicadores");
 }

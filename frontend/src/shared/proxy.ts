@@ -9,6 +9,8 @@ const PUBLIC_PATHS = [
   "/auth/esqueci-senha",
 ];
 
+const ROTAS_PRIVADAS = ["/dashboard", "/motorista", "/admin"];
+
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -26,6 +28,18 @@ export default function proxy(request: NextRequest) {
 
   const token = request.cookies.get("nextlog_token")?.value;
   const role = request.cookies.get("nextlog_role")?.value;
+  const authToken = request.cookies.get("auth_token")?.value;
+
+  const ehRotaPrivada = ROTAS_PRIVADAS.some(
+    (rota) => pathname === rota || pathname.startsWith(rota + "/")
+  );
+
+  if (ehRotaPrivada && !token && !authToken) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/login";
+    url.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(url);
+  }
 
   if (!token) {
     const url = request.nextUrl.clone();
@@ -38,7 +52,10 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/motorista/perfil", request.url));
   }
 
-  if ((role === "ADMIN" || role === "GESTOR") && pathname.startsWith("/motorista")) {
+  if (
+    (role === "ADMIN" || role === "GESTOR") &&
+    pathname.startsWith("/motorista")
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

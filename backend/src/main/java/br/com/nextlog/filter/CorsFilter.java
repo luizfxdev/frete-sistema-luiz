@@ -1,12 +1,10 @@
 package br.com.nextlog.filter;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter("/*")
 public class CorsFilter implements Filter {
 
     @Override
@@ -14,9 +12,9 @@ public class CorsFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-
         String origin = httpRequest.getHeader("Origin");
-        if ("http://localhost:3000".equals(origin)) {
+
+        if (origin != null && origin.startsWith("http://localhost")) {
             httpResponse.setHeader("Access-Control-Allow-Origin", origin);
             httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
             httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -33,8 +31,10 @@ public class CorsFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+    }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 }
