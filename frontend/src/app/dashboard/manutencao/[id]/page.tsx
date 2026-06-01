@@ -88,7 +88,6 @@ export default function ManutencaoDetalhePage() {
         }
       `}</style>
 
-      {/* Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-50 no-print">
         <div className="w-full px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -101,7 +100,7 @@ export default function ManutencaoDetalhePage() {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {loading ? 'Carregando...' : `Manutenção - ${manutencao?.placa}`}
+                {loading ? 'Carregando...' : manutencao ? `Manutenção - ${manutencao.placa}` : 'Manutenção'}
               </h1>
               <p className="text-sm text-gray-500">Detalhes e orçamentos</p>
             </div>
@@ -144,7 +143,6 @@ export default function ManutencaoDetalhePage() {
         </div>
       </div>
 
-      {/* Main Content */}
       <main className="w-full px-8 py-8 pb-12">
         {loading ? (
           <div className="space-y-6">
@@ -153,7 +151,6 @@ export default function ManutencaoDetalhePage() {
           </div>
         ) : manutencao ? (
           <div className="space-y-8 animate-fadeIn">
-            {/* Dados da Manutenção */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">
                 Informações da Manutenção
@@ -161,7 +158,6 @@ export default function ManutencaoDetalhePage() {
               <ManutencaoDetalhes manutencao={manutencao} />
             </div>
 
-            {/* Orçamentos */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Orçamentos</h2>
               <OrcamentoTable itens={itens} onSalvar={salvar} />
@@ -170,7 +166,6 @@ export default function ManutencaoDetalhePage() {
         ) : null}
       </main>
 
-      {/* Confirm Cancel Dialog */}
       {showCancelConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">

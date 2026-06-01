@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/api/manutencoes/*")
@@ -42,7 +40,7 @@ public class ManutencaoApi extends HttpServlet {
                     "\"orcamentos\":" + toJsonItens(itens) +
                     "}";
                 
-                JsonResponse.ok(resp, json);
+                JsonResponse.okRaw(resp, json);
             } else {
                 JsonResponse.erro(resp, HttpServletResponse.SC_BAD_REQUEST, "ID obrigatório");
             }
@@ -50,6 +48,16 @@ public class ManutencaoApi extends HttpServlet {
             JsonResponse.erro(resp, HttpServletResponse.SC_BAD_REQUEST, "ID inválido");
         } catch (NegocioException e) {
             JsonResponse.erro(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        if ("PATCH".equalsIgnoreCase(req.getMethod())) {
+            doPatch(req, resp);
+        } else {
+            super.service(req, resp);
         }
     }
 
@@ -70,10 +78,10 @@ public class ManutencaoApi extends HttpServlet {
             
             if ("liberar".equals(acao)) {
                 manutencaoBO.liberarManutencao(id);
-                JsonResponse.ok(resp, "{\"sucesso\":true,\"mensagem\":\"Veículo liberado com sucesso\"}");
+                JsonResponse.okRaw(resp, "{\"sucesso\":true,\"mensagem\":\"Veículo liberado com sucesso\"}");
             } else if ("cancelar".equals(acao)) {
                 manutencaoBO.cancelarManutencao(id);
-                JsonResponse.ok(resp, "{\"sucesso\":true,\"mensagem\":\"Manutenção cancelada com sucesso\"}");
+                JsonResponse.okRaw(resp, "{\"sucesso\":true,\"mensagem\":\"Manutenção cancelada com sucesso\"}");
             } else {
                 JsonResponse.erro(resp, HttpServletResponse.SC_BAD_REQUEST, "Ação inválida");
             }
@@ -89,7 +97,6 @@ public class ManutencaoApi extends HttpServlet {
             "\"id\":" + m.getId() + "," +
             "\"placa\":\"" + escape(m.getPlaca()) + "\"," +
             "\"tipo\":\"" + m.getTipo().name() + "\"," +
-            "\"status\":\"" + m.getStatusManutencao().name() + "\"," +
             "\"statusManutencao\":\"" + m.getStatusManutencao().name() + "\"," +
             "\"dataInicio\":\"" + m.getDataInicio().toString() + "\"," +
             (m.getDataFim() != null ? "\"dataFim\":\"" + m.getDataFim().toString() + "\"," : "") +

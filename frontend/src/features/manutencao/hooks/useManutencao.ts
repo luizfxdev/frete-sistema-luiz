@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { manutencaoService } from '../adapters/manutencaoService';
 import type {
@@ -7,6 +6,83 @@ import type {
   OrcamentoManutencaoItem,
   DashboardManutencaoKpis,
 } from '@/shared/types/api';
+
+export function useManutencaoDetalhe(id: number) {
+  const [manutencao, setManutencao] = useState<ManutencaoVeiculo | null>(null);
+  const [itens, setItens] = useState<OrcamentoManutencaoItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id || id === 0) {
+      setError('ID inválido');
+      setLoading(false);
+      return;
+    }
+
+    const carregar = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const resultado = await manutencaoService.buscarManutencao(id);
+
+        if (resultado) {
+          setManutencao(resultado.manutencao);
+          setItens(resultado.orcamentos || []);
+        } else {
+          setError('Manutenção não encontrada');
+        }
+      } catch (err) {
+        const mensagem = err instanceof Error ? err.message : 'Erro desconhecido';
+        setError(mensagem);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregar();
+  }, [id]);
+
+  const salvar = async (item: OrcamentoManutencaoItem) => {
+    try {
+      await manutencaoService.salvarOrcamento(item);
+      const resultado = await manutencaoService.buscarManutencao(id);
+      if (resultado) {
+        setManutencao(resultado.manutencao);
+        setItens(resultado.orcamentos || []);
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const liberar = async () => {
+    try {
+      await manutencaoService.liberarManutencao(id);
+      const resultado = await manutencaoService.buscarManutencao(id);
+      if (resultado) {
+        setManutencao(resultado.manutencao);
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const cancelar = async () => {
+    try {
+      await manutencaoService.cancelarManutencao(id);
+      const resultado = await manutencaoService.buscarManutencao(id);
+      if (resultado) {
+        setManutencao(resultado.manutencao);
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  return { manutencao, itens, loading, error, salvar, liberar, cancelar };
+}
 
 export function useManutencaoKpis() {
   const [kpis, setKpis] = useState<DashboardManutencaoKpis | null>(null);
@@ -25,6 +101,7 @@ export function useManutencaoKpis() {
         setLoading(false);
       }
     };
+
     carregarKpis();
   }, []);
 
@@ -48,86 +125,9 @@ export function useManutencoes() {
         setLoading(false);
       }
     };
+
     listar();
   }, []);
 
   return { data, loading, error };
-}
-
-export function useManutencaoDetalhe(id: number) {
-  const [manutencao, setManutencao] = useState<ManutencaoVeiculo | null>(null);
-  const [itens, setItens] = useState<OrcamentoManutencaoItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-
-    const carregar = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const resultado = await manutencaoService.buscarManutencao(id);
-
-        if (resultado) {
-          setManutencao(resultado.manutencao);
-          const itensFlat = resultado.orcamentos || [];
-          setItens(itensFlat);
-        } else {
-          setError('Manutenção não encontrada');
-        }
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Erro ao carregar manutenção'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    carregar();
-  }, [id]);
-
-  const salvar = async (item: OrcamentoManutencaoItem) => {
-    try {
-      await manutencaoService.salvarOrcamento(item);
-      const resultado = await manutencaoService.buscarManutencao(id);
-      if (resultado) {
-        setManutencao(resultado.manutencao);
-        setItens(resultado.orcamentos || []);
-      }
-    } catch (err) {
-      console.error('Erro ao salvar orçamento:', err);
-      throw err;
-    }
-  };
-
-  const liberar = async () => {
-    try {
-      await manutencaoService.liberarManutencao(id);
-      const resultado = await manutencaoService.buscarManutencao(id);
-      if (resultado) {
-        setManutencao(resultado.manutencao);
-      }
-    } catch (err) {
-      console.error('Erro ao liberar manutenção:', err);
-      throw err;
-    }
-  };
-
-  const cancelar = async () => {
-    try {
-      await manutencaoService.cancelarManutencao(id);
-      const resultado = await manutencaoService.buscarManutencao(id);
-      if (resultado) {
-        setManutencao(resultado.manutencao);
-      }
-    } catch (err) {
-      console.error('Erro ao cancelar manutenção:', err);
-      throw err;
-    }
-  };
-
-  return { manutencao, itens, loading, error, salvar, liberar, cancelar };
 }
