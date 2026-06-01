@@ -126,10 +126,7 @@
 
     <div class="nl-sidebar-divider"></div>
     <span class="nl-nav-section-label">Gestão</span>
-    <a href="${pageContext.request.contextPath}/manutencoes"
-       class="nl-nav-link ${fn:contains(uri, '/manutencoes') ? 'active' : ''}">
-      <i class="bi bi-wrench-adjustable-circle-fill"></i> Manutenções
-    </a>
+    
     <a href="${pageContext.request.contextPath}/relatorios"
        class="nl-nav-link ${fn:contains(uri, '/relatorios') ? 'active' : ''}">
       <i class="bi bi-file-earmark-bar-graph-fill"></i> Relatórios
