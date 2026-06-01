@@ -206,7 +206,7 @@
         </div>
       </div>
       <div id="report-bar-chart"
-           data-resumo="${not empty resumoMensal ? resumoMensal : '[&quot;Nov&quot;,&quot;Dez&quot;,&quot;Jan&quot;,&quot;Fev&quot;,&quot;Mar&quot;,&quot;Abr&quot;,&quot;Mai&quot;]|[42,55,38,61,49,70,58]|[5,8,4,7,3,6,4]'}">
+           data-resumo='${not empty resumoMensal ? resumoMensal : "[]|[]|[]"}'>
       </div>
     </div>
 

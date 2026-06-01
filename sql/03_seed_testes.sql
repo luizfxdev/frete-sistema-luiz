@@ -16,3 +16,17 @@ INSERT INTO veiculo (placa, rntrc, ano_fabricacao, tipo, tara_kg, capacidade_kg,
 INSERT INTO frete (numero, id_remetente, id_destinatario, id_motorista, id_veiculo, municipio_origem, uf_origem, municipio_destino, uf_destino, descricao_carga, peso_kg, volumes, valor_frete, aliquota_icms, valor_icms, valor_total, status, data_emissao, data_previsao_entrega) VALUES
 ('FRT-2026-09001', 1, 2, 1, 1, 'Recife', 'PE', 'João Pessoa', 'PB', 'Carga de teste para fluxo completo', 5000.00, 25, 1800.00, 12.00, 216.00, 2016.00, 'EMITIDO', '2026-04-26', '2026-05-03'),
 ('FRT-2026-09002', 1, 3, 1, 1, 'Recife', 'PE', 'Maceió',      'AL', 'Carga teste atraso',                 4000.00, 20, 1500.00, 12.00, 180.00, 1680.00, 'EMITIDO', '2026-04-15', '2026-04-22');
+
+INSERT INTO frete (numero, id_remetente, id_destinatario, id_motorista, id_veiculo, municipio_origem, uf_origem, municipio_destino, uf_destino, descricao_carga, peso_kg, volumes, valor_frete, aliquota_icms, valor_icms, valor_total, status, data_emissao, data_previsao_entrega) VALUES
+('FRT-2025-11001', 1, 2, 1, 1, 'Recife', 'PE', 'João Pessoa', 'PB', 'Eletrônicos', 150.00, 5, 500.00, 18.00, 90.00, 590.00, 'ENTREGUE', '2025-11-01', '2025-11-05'),
+('FRT-2025-11002', 1, 2, 1, 1, 'Recife', 'PE', 'Rio de Janeiro', 'RJ', 'Alimentos', 200.00, 10, 600.00, 18.00, 108.00, 708.00, 'CANCELADO', '2025-11-10', '2025-11-15'),
+('FRT-2025-12001', 2, 3, 2, 2, 'Belo Horizonte', 'MG', 'São Paulo', 'SP', 'Têxteis', 250.00, 8, 550.00, 18.00, 99.00, 649.00, 'ENTREGUE', '2025-12-01', '2025-12-05'),
+('FRT-2025-12002', 2, 3, 2, 2, 'Belo Horizonte', 'MG', 'São Paulo', 'SP', 'Equipamentos', 300.00, 6, 700.00, 18.00, 126.00, 826.00, 'ENTREGUE', '2025-12-15', '2025-12-20'),
+('FRT-2026-01001', 3, 1, 3, 3, 'Salvador', 'BA', 'São Paulo', 'SP', 'Móveis', 400.00, 12, 800.00, 18.00, 144.00, 944.00, 'ENTREGUE', '2026-01-05', '2026-01-12'),
+('FRT-2026-01002', 3, 1, 3, 3, 'Salvador', 'BA', 'São Paulo', 'SP', 'Plásticos', 180.00, 7, 450.00, 18.00, 81.00, 531.00, 'CANCELADO', '2026-01-20', '2026-01-28'),
+('FRT-2026-02001', 1, 3, 1, 1, 'São Paulo', 'SP', 'Brasília', 'DF', 'Peças', 220.00, 9, 650.00, 18.00, 117.00, 767.00, 'ENTREGUE', '2026-02-02', '2026-02-10'),
+('FRT-2026-02002', 2, 1, 2, 2, 'Belo Horizonte', 'MG', 'Salvador', 'BA', 'Químicos', 280.00, 11, 720.00, 18.00, 129.60, 849.60, 'ENTREGUE', '2026-02-18', '2026-02-25'),
+('FRT-2026-03001', 3, 2, 3, 3, 'Salvador', 'BA', 'Recife', 'PE', 'Bebidas', 350.00, 15, 850.00, 18.00, 153.00, 1003.00, 'ENTREGUE', '2026-03-05', '2026-03-12'),
+('FRT-2026-03002', 1, 3, 1, 1, 'São Paulo', 'SP', 'Curitiba', 'PR', 'Papéis', 190.00, 8, 520.00, 18.00, 93.60, 613.60, 'CANCELADO', '2026-03-22', '2026-03-29'),
+('FRT-2026-05001', 2, 1, 2, 2, 'Belo Horizonte', 'MG', 'São Paulo', 'SP', 'Serviços', 240.00, 6, 600.00, 18.00, 108.00, 708.00, 'ENTREGUE', '2026-05-08', '2026-05-15'),
+('FRT-2026-05002', 3, 2, 3, 3, 'Salvador', 'BA', 'São Paulo', 'SP', 'Consultoria', 320.00, 4, 750.00, 18.00, 135.00, 885.00, 'ENTREGUE', '2026-05-20', '2026-05-27');
