@@ -1,11 +1,11 @@
 "use client";
 
-import type { Manutencao, ItemOrcamento } from "@/features/manutencao/adapters/manutencaoService";
+import type { ManutencaoVeiculo, OrcamentoManutencaoItem } from "@/shared/types/api";
 import { formatCurrency, formatDate } from "@/core/utils/formatters";
 
 interface Props {
-  manutencao: Manutencao;
-  itens: ItemOrcamento[];
+  manutencao: ManutencaoVeiculo;
+  itens: OrcamentoManutencaoItem[];
 }
 
 export function OrcamentoPdfButton({ manutencao, itens }: Props) {
@@ -44,12 +44,10 @@ export function OrcamentoPdfButton({ manutencao, itens }: Props) {
         </div>
         <h2>Dados do Veículo</h2>
         <div class="info-grid">
-          <div class="info-item"><label>Veículo</label><p>${manutencao.veiculo}</p></div>
           <div class="info-item"><label>Placa</label><p>${manutencao.placa}</p></div>
           <div class="info-item"><label>Tipo</label><p>${manutencao.tipo}</p></div>
-          <div class="info-item"><label>Oficina</label><p>${manutencao.oficina}</p></div>
+          <div class="info-item"><label>Status</label><p>${manutencao.statusManutencao}</p></div>
           <div class="info-item"><label>Início</label><p>${formatDate(manutencao.dataInicio)}</p></div>
-          <div class="info-item"><label>Status</label><p>${manutencao.status}</p></div>
         </div>
         <h2>Itens do Orçamento</h2>
         <table>

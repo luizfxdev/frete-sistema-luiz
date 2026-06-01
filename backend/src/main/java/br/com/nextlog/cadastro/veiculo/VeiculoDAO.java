@@ -11,18 +11,21 @@ import java.util.List;
 public class VeiculoDAO {
 
     public Long inserir(Veiculo v) throws SQLException {
-        String sql = "INSERT INTO veiculo (placa, rntrc, ano_fabricacao, tipo, tara_kg, capacidade_kg, volume_m3, status) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO veiculo (placa, rntrc, ano_fabricacao, marca, modelo, cor, tipo, tara_kg, capacidade_kg, volume_m3, status) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
         try (Connection conn = ConnectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, v.getPlaca());
             ps.setString(2, v.getRntrc());
             ps.setInt(3, v.getAnoFabricacao());
-            ps.setString(4, v.getTipo().name());
-            ps.setBigDecimal(5, v.getTaraKg());
-            ps.setBigDecimal(6, v.getCapacidadeKg());
-            ps.setBigDecimal(7, v.getVolumeM3());
-            ps.setString(8, v.getStatus().name());
+            ps.setString(4, v.getMarca());
+            ps.setString(5, v.getModelo());
+            ps.setString(6, v.getCor());
+            ps.setString(7, v.getTipo().name());
+            ps.setBigDecimal(8, v.getTaraKg());
+            ps.setBigDecimal(9, v.getCapacidadeKg());
+            ps.setBigDecimal(10, v.getVolumeM3());
+            ps.setString(11, v.getStatus().name());
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
                 return rs.getLong(1);
@@ -31,19 +34,22 @@ public class VeiculoDAO {
     }
 
     public void atualizar(Veiculo v) throws SQLException {
-        String sql = "UPDATE veiculo SET placa=?, rntrc=?, ano_fabricacao=?, tipo=?, tara_kg=?, " +
+        String sql = "UPDATE veiculo SET placa=?, rntrc=?, ano_fabricacao=?, marca=?, modelo=?, cor=?, tipo=?, tara_kg=?, " +
                      "capacidade_kg=?, volume_m3=?, status=? WHERE id=?";
         try (Connection conn = ConnectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, v.getPlaca());
             ps.setString(2, v.getRntrc());
             ps.setInt(3, v.getAnoFabricacao());
-            ps.setString(4, v.getTipo().name());
-            ps.setBigDecimal(5, v.getTaraKg());
-            ps.setBigDecimal(6, v.getCapacidadeKg());
-            ps.setBigDecimal(7, v.getVolumeM3());
-            ps.setString(8, v.getStatus().name());
-            ps.setLong(9, v.getId());
+            ps.setString(4, v.getMarca());
+            ps.setString(5, v.getModelo());
+            ps.setString(6, v.getCor());
+            ps.setString(7, v.getTipo().name());
+            ps.setBigDecimal(8, v.getTaraKg());
+            ps.setBigDecimal(9, v.getCapacidadeKg());
+            ps.setBigDecimal(10, v.getVolumeM3());
+            ps.setString(11, v.getStatus().name());
+            ps.setLong(12, v.getId());
             ps.executeUpdate();
         }
     }
@@ -161,12 +167,25 @@ public class VeiculoDAO {
         }
     }
 
+
+    public void atualizarStatus(Long id, StatusVeiculo status) throws SQLException {
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement("UPDATE veiculo SET status=? WHERE id=?")) {
+            ps.setString(1, status.name());
+            ps.setLong(2, id);
+            ps.executeUpdate();
+        }
+    }
+
     private Veiculo mapear(ResultSet rs) throws SQLException {
         Veiculo v = new Veiculo();
         v.setId(rs.getLong("id"));
         v.setPlaca(rs.getString("placa"));
         v.setRntrc(rs.getString("rntrc"));
         v.setAnoFabricacao(rs.getInt("ano_fabricacao"));
+        v.setMarca(rs.getString("marca"));
+        v.setModelo(rs.getString("modelo"));
+        v.setCor(rs.getString("cor"));
         v.setTipo(TipoVeiculo.valueOf(rs.getString("tipo")));
         v.setTaraKg(rs.getBigDecimal("tara_kg"));
         v.setCapacidadeKg(rs.getBigDecimal("capacidade_kg"));

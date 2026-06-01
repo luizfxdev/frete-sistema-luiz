@@ -1,17 +1,18 @@
 package br.com.nextlog.enums;
-
-public enum TipoManutencao {
-    PREVENTIVA("Preventiva"),
-    CORRETIVA("Corretiva"),
-    SINISTRO("Sinistro");
-
+ 
+public enum StatusManutencao {
+    EM_ANDAMENTO("Em andamento"),
+    CONCLUIDA("Concluída"),
+    CANCELADA("Cancelada");
+ 
     private final String descricao;
-
-    TipoManutencao(String descricao) {
+ 
+    StatusManutencao(String descricao) {
         this.descricao = descricao;
     }
-
+ 
     public String getDescricao() {
         return descricao;
     }
 }
+ 

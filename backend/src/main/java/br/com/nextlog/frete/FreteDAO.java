@@ -96,6 +96,16 @@ public class FreteDAO {
         }
     }
 
+    public Frete buscarPorNumero(String numero) throws SQLException {
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SELECT_BASE + " WHERE f.numero = ?")) {
+            ps.setString(1, numero.toUpperCase());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? mapear(rs) : null;
+            }
+        }
+    }
+
     public Frete buscarPorIdParaTransacao(Connection conn, Long id) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM frete WHERE id=? FOR UPDATE")) {
             ps.setLong(1, id);

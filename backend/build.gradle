@@ -20,10 +20,11 @@ dependencies {
     implementation 'commons-dbcp:commons-dbcp:1.4'
     implementation 'javax.servlet:jstl:1.2'
     implementation 'org.mindrot:jbcrypt:0.4'
-    implementation('net.sf.jasperreports:jasperreports:6.20.6') {
-        exclude group: 'commons-logging', module: 'commons-logging'
-        exclude group: 'org.slf4j',       module: 'slf4j-jcl'
-    }
+    
+    implementation 'net.sf.jasperreports:jasperreports:6.20.6'
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
     implementation 'org.slf4j:slf4j-jdk14:1.7.36'
 }
 

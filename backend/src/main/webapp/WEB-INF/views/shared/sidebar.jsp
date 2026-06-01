@@ -108,12 +108,8 @@
        class="nl-nav-link ${fn:contains(uri, '/fretes') ? 'active' : ''}">
       <i class="bi bi-box-seam-fill"></i> Fretes
     </a>
-    <a href="${pageContext.request.contextPath}/rotas"
-       class="nl-nav-link ${fn:contains(uri, '/rotas') ? 'active' : ''}">
-      <i class="bi bi-signpost-split-fill"></i> Tabela de Rotas
-    </a>
-
-    <div class="nl-sidebar-divider"></div>
+     
+     <div class="nl-sidebar-divider"></div>
     <span class="nl-nav-section-label">Cadastros</span>
     <a href="${pageContext.request.contextPath}/clientes"
        class="nl-nav-link ${fn:contains(uri, '/clientes') ? 'active' : ''}">
@@ -130,10 +126,7 @@
 
     <div class="nl-sidebar-divider"></div>
     <span class="nl-nav-section-label">Gestão</span>
-    <a href="${pageContext.request.contextPath}/manutencoes"
-       class="nl-nav-link ${fn:contains(uri, '/manutencoes') ? 'active' : ''}">
-      <i class="bi bi-wrench-adjustable-circle-fill"></i> Manutenções
-    </a>
+    
     <a href="${pageContext.request.contextPath}/relatorios"
        class="nl-nav-link ${fn:contains(uri, '/relatorios') ? 'active' : ''}">
       <i class="bi bi-file-earmark-bar-graph-fill"></i> Relatórios

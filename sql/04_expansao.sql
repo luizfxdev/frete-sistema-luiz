@@ -1,13 +1,28 @@
-CREATE TABLE motorista_documento (
-    id              BIGSERIAL    PRIMARY KEY,
-    id_motorista    BIGINT       NOT NULL REFERENCES motorista(id) ON DELETE CASCADE,
-    tipo            VARCHAR(10)  NOT NULL,
-    caminho_arquivo VARCHAR(500) NOT NULL,
-    criado_em       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT chk_motorista_documento_tipo CHECK (tipo IN ('FOTO', 'CNH'))
+ALTER TABLE veiculo ADD COLUMN marca VARCHAR(100) NOT NULL DEFAULT '';
+ALTER TABLE veiculo ADD COLUMN modelo VARCHAR(100) NOT NULL DEFAULT '';
+ALTER TABLE veiculo ADD COLUMN cor VARCHAR(50) NOT NULL DEFAULT '';
+
+CREATE TABLE manutencao_veiculo (
+    id                  BIGSERIAL       PRIMARY KEY,
+    id_veiculo          BIGINT          NOT NULL REFERENCES veiculo(id) ON DELETE RESTRICT,
+    tipo                VARCHAR(15)     NOT NULL,
+    placa               VARCHAR(7)      NOT NULL,
+    data_inicio         DATE            NOT NULL,
+    data_fim            DATE,
+    km_atual            NUMERIC(10,2)   NOT NULL,
+    custo               NUMERIC(12,2)   NOT NULL DEFAULT 0,
+    descricao           TEXT,
+    status_manutencao   VARCHAR(15)     NOT NULL DEFAULT 'EM_ANDAMENTO',
+    data_criacao        TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_manutencao_tipo CHECK (tipo IN ('PREVENTIVA', 'CORRETIVA', 'SINISTRO')),
+    CONSTRAINT chk_manutencao_status CHECK (status_manutencao IN ('EM_ANDAMENTO', 'CONCLUIDA', 'CANCELADA'))
 );
 
-CREATE INDEX idx_motorista_documento_motorista ON motorista_documento(id_motorista);
+CREATE INDEX idx_manutencao_veiculo ON manutencao_veiculo(id_veiculo);
+CREATE INDEX idx_manutencao_status ON manutencao_veiculo(status_manutencao);
+CREATE INDEX idx_manutencao_tipo ON manutencao_veiculo(tipo);
+CREATE INDEX idx_manutencao_data ON manutencao_veiculo(data_inicio DESC);
 
 CREATE TABLE orcamento_manutencao (
     id            BIGSERIAL     PRIMARY KEY,
@@ -32,6 +47,17 @@ CREATE TABLE orcamento_manutencao_item (
 );
 
 CREATE INDEX idx_orcamento_item_orcamento ON orcamento_manutencao_item(id_orcamento);
+
+CREATE TABLE motorista_documento (
+    id              BIGSERIAL    PRIMARY KEY,
+    id_motorista    BIGINT       NOT NULL REFERENCES motorista(id) ON DELETE CASCADE,
+    tipo            VARCHAR(10)  NOT NULL,
+    caminho_arquivo VARCHAR(500) NOT NULL,
+    criado_em       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_motorista_documento_tipo CHECK (tipo IN ('FOTO', 'CNH'))
+);
+
+CREATE INDEX idx_motorista_documento_motorista ON motorista_documento(id_motorista);
 
 CREATE TABLE candidatura_motorista (
     id              BIGSERIAL    PRIMARY KEY,

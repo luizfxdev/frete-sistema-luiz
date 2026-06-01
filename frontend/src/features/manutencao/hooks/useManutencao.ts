@@ -1,45 +1,133 @@
-"use client";
+'use client';
+import { useState, useEffect } from 'react';
+import { manutencaoService } from '../adapters/manutencaoService';
+import type {
+  ManutencaoVeiculo,
+  OrcamentoManutencaoItem,
+  DashboardManutencaoKpis,
+} from '@/shared/types/api';
 
-import { useState, useEffect } from "react";
-import {
-  buscarKpisManutencao, listarManutencoes, buscarManutencao,
-  listarOrcamento, salvarOrcamento,
-  type ManutencaoKpis, type Manutencao, type ItemOrcamento,
-} from "@/features/manutencao/adapters/manutencaoService";
+export function useManutencaoDetalhe(id: number) {
+  const [manutencao, setManutencao] = useState<ManutencaoVeiculo | null>(null);
+  const [itens, setItens] = useState<OrcamentoManutencaoItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id || id === 0) {
+      setError('ID inválido');
+      setLoading(false);
+      return;
+    }
+
+    const carregar = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const resultado = await manutencaoService.buscarManutencao(id);
+
+        if (resultado) {
+          setManutencao(resultado.manutencao);
+          setItens(resultado.orcamentos || []);
+        } else {
+          setError('Manutenção não encontrada');
+        }
+      } catch (err) {
+        const mensagem = err instanceof Error ? err.message : 'Erro desconhecido';
+        setError(mensagem);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregar();
+  }, [id]);
+
+  const salvar = async (item: OrcamentoManutencaoItem) => {
+    try {
+      await manutencaoService.salvarOrcamento(item);
+      const resultado = await manutencaoService.buscarManutencao(id);
+      if (resultado) {
+        setManutencao(resultado.manutencao);
+        setItens(resultado.orcamentos || []);
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const liberar = async () => {
+    try {
+      await manutencaoService.liberarManutencao(id);
+      const resultado = await manutencaoService.buscarManutencao(id);
+      if (resultado) {
+        setManutencao(resultado.manutencao);
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const cancelar = async () => {
+    try {
+      await manutencaoService.cancelarManutencao(id);
+      const resultado = await manutencaoService.buscarManutencao(id);
+      if (resultado) {
+        setManutencao(resultado.manutencao);
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  return { manutencao, itens, loading, error, salvar, liberar, cancelar };
+}
 
 export function useManutencaoKpis() {
-  const [kpis, setKpis] = useState<ManutencaoKpis | null>(null);
+  const [kpis, setKpis] = useState<DashboardManutencaoKpis | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    buscarKpisManutencao().then(setKpis).finally(() => setLoading(false));
+    const carregarKpis = async () => {
+      try {
+        setLoading(true);
+        const dados = await manutencaoService.buscarKpis();
+        setKpis(dados);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar KPIs');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarKpis();
   }, []);
-  return { kpis, loading };
+
+  return { kpis, loading, error };
 }
 
 export function useManutencoes() {
-  const [data, setData] = useState<Manutencao[]>([]);
+  const [data, setData] = useState<ManutencaoVeiculo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    listarManutencoes().then(setData).finally(() => setLoading(false));
+    const listar = async () => {
+      try {
+        setLoading(true);
+        const manutencoes = await manutencaoService.listarManutencoes();
+        setData(manutencoes || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao listar manutenções');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    listar();
   }, []);
-  return { data, loading };
-}
 
-export function useManutencaoDetalhe(id: number) {
-  const [manutencao, setManutencao] = useState<Manutencao | null>(null);
-  const [itens, setItens] = useState<ItemOrcamento[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.all([buscarManutencao(id), listarOrcamento(id)])
-      .then(([m, orcamento]) => { setManutencao(m); setItens(orcamento); })
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  const salvar = async (novosItens: ItemOrcamento[]) => {
-    const saved = await salvarOrcamento(id, novosItens);
-    setItens(saved);
-  };
-
-  return { manutencao, itens, loading, salvar };
+  return { data, loading, error };
 }

@@ -3,6 +3,7 @@ package br.com.nextlog.cadastro.veiculo;
 import br.com.nextlog.enums.StatusVeiculo;
 import br.com.nextlog.enums.TipoVeiculo;
 import br.com.nextlog.exception.NegocioException;
+import br.com.nextlog.manutencao.ManutencaoVeiculo;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +70,19 @@ public class VeiculoControlador extends HttpServlet {
             return;
         }
 
+        if (acao.startsWith("/enviar-manutencao/")) {
+            try {
+                Long idVeiculo = Long.valueOf(acao.substring("/enviar-manutencao/".length()));
+                ManutencaoVeiculo m = bindManutencao(req);
+                Long idManutencao = veiculoBO.enviarParaManutencao(idVeiculo, m);
+                resp.sendRedirect(req.getContextPath() + "/manutencoes");
+            } catch (NegocioException e) {
+                req.setAttribute("erro", e.getMessage());
+                listar(req, resp);
+            }
+            return;
+        }
+
         try {
             Veiculo v = bind(req);
             veiculoBO.salvar(v);
@@ -115,6 +130,9 @@ public class VeiculoControlador extends HttpServlet {
         v.setRntrc(req.getParameter("rntrc"));
         String ano = req.getParameter("anoFabricacao");
         if (ano != null && !ano.isEmpty()) v.setAnoFabricacao(Integer.valueOf(ano));
+        v.setMarca(req.getParameter("marca"));
+        v.setModelo(req.getParameter("modelo"));
+        v.setCor(req.getParameter("cor"));
         String tipo = req.getParameter("tipo");
         if (tipo != null && !tipo.isEmpty()) v.setTipo(TipoVeiculo.valueOf(tipo));
         v.setTaraKg(parseDecimal(req.getParameter("taraKg")));
@@ -123,6 +141,20 @@ public class VeiculoControlador extends HttpServlet {
         String status = req.getParameter("status");
         v.setStatus(status == null || status.isEmpty() ? StatusVeiculo.DISPONIVEL : StatusVeiculo.valueOf(status));
         return v;
+    }
+
+    private ManutencaoVeiculo bindManutencao(HttpServletRequest req) {
+        ManutencaoVeiculo m = new ManutencaoVeiculo();
+        String tipo = req.getParameter("tipo");
+        if (tipo != null && !tipo.isEmpty()) m.setTipo(br.com.nextlog.enums.TipoManutencao.valueOf(tipo));
+        String inicio = req.getParameter("dataInicio");
+        if (inicio != null && !inicio.isEmpty()) m.setDataInicio(LocalDate.parse(inicio));
+        String km = req.getParameter("kmAtual");
+        if (km != null && !km.isEmpty()) m.setKmAtual(new BigDecimal(km.replace(",", ".")));
+        String custo = req.getParameter("custo");
+        if (custo != null && !custo.isEmpty()) m.setCusto(new BigDecimal(custo.replace(",", ".")));
+        m.setDescricao(req.getParameter("descricao"));
+        return m;
     }
 
     private BigDecimal parseDecimal(String s) {

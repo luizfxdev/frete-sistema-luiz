@@ -10,16 +10,37 @@ function getHeaders(isFormData = false): HeadersInit {
   return headers;
 }
 
+function checkAuthAndRedirect() {
+  useAuthStore.getState().logout();
+  if (typeof window !== "undefined") {
+    const currentPath = window.location.pathname;
+    window.location.href = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
+  }
+  throw new Error("Autenticação necessária.");
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
+  if (res.status === 401 || res.status === 403) {
+    checkAuthAndRedirect();
+  }
+
   if (!res.ok) {
     const msg = await res.text().catch(() => res.statusText);
     throw new Error(msg || `HTTP ${res.status}`);
   }
+
   const text = await res.text();
-  return text ? JSON.parse(text) : ({} as T);
+  const parsed = text ? JSON.parse(text) : ({} as T);
+  if (parsed && typeof parsed === "object" && "data" in parsed) {
+    return parsed.data as T;
+  }
+  return parsed;
 }
 
 export async function get<T>(path: string): Promise<T> {
+  const token = useAuthStore.getState().token;
+  if (!token) checkAuthAndRedirect();
+
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "GET",
     headers: getHeaders(),

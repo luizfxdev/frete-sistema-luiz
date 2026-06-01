@@ -29,6 +29,14 @@ public final class JsonResponse {
         enviar(resp, HttpServletResponse.SC_OK, payload);
     }
 
+    public static void okRaw(HttpServletResponse resp, String rawJson) throws IOException {
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.setContentType("application/json;charset=UTF-8");
+        try (PrintWriter out = resp.getWriter()) {
+            out.write(rawJson);
+        }
+    }
+
     public static void erro(HttpServletResponse resp, int status, String mensagem) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"erro\":").append(escape(mensagem)).append("}");

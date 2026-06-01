@@ -5,6 +5,7 @@ const STATUS_CONFIG: Record<StatusEntrega, { label: string; icon: string; color:
   SAIDA_CONFIRMADA: { label: "Saída Confirmada", icon: "bi-check-lg", color: "text-success", bg: "bg-success/10" },
   EM_TRANSITO: { label: "Em Trânsito", icon: "bi-truck", color: "text-orange-500", bg: "bg-orange-500/10" },
   ENTREGUE: { label: "Entregue", icon: "bi-check-lg", color: "text-success", bg: "bg-success/10" },
+  DEVOLVIDO: { label: "Devolvido", icon: "bi-arrow-counterclockwise", color: "text-warning", bg: "bg-warning/10" },
   NAO_ENTREGUE: { label: "Não Entregue", icon: "bi-x-lg", color: "text-red-500", bg: "bg-red-500/10" },
   CANCELADO: { label: "Cancelado", icon: "bi-x-lg", color: "text-red-500", bg: "bg-red-500/10" },
 };

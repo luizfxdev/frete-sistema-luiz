@@ -161,6 +161,17 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
   
+  .btn-secondary {
+    background: #10b981;
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
   @media (max-width: 1024px) {
     .nl-main { padding: 1.5rem; }
     .nl-container { max-width: 100%; }
@@ -179,6 +190,12 @@
       <h1><i class="bi bi-file-earmark-bar-graph-fill" style="color: #3b82f6; margin-right: 0.75rem;"></i>Relatórios</h1>
     </div>
 
+    <c:if test="${not empty erro}">
+      <div style="background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+        <strong>Erro:</strong> ${erro}
+      </div>
+    </c:if>
+
     <div class="nl-chart-section">
       <div class="nl-chart-section-header">
         <div>
@@ -189,7 +206,7 @@
         </div>
       </div>
       <div id="report-bar-chart"
-           data-resumo="${not empty resumoMensal ? resumoMensal : '[&quot;Nov&quot;,&quot;Dez&quot;,&quot;Jan&quot;,&quot;Fev&quot;,&quot;Mar&quot;,&quot;Abr&quot;,&quot;Mai&quot;]|[42,55,38,61,49,70,58]|[5,8,4,7,3,6,4]'}">
+           data-resumo='${not empty resumoMensal ? resumoMensal : "[]|[]|[]"}'>
       </div>
     </div>
 
@@ -205,7 +222,7 @@
         <div class="nl-report-divider"></div>
         <div class="nl-report-card-body">
           <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5;">
-            Gera um PDF com todos os fretes pendentes, agrupados por status e ordenados por data de criação.
+            Gera um PDF com todos os fretes pendentes (EMITIDO, SAÍDA CONFIRMADA, EM TRÂNSITO), ordenados por data de previsão de entrega.
           </p>
           <a href="${pageContext.request.contextPath}/relatorios/fretes-em-aberto"
              class="btn btn-primary" target="_blank" style="align-self: flex-start;">
@@ -224,12 +241,15 @@
         </div>
         <div class="nl-report-divider"></div>
         <div class="nl-report-card-body">
+          <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 0.5rem;">
+            Selecione um motorista e data para gerar o romaneio formatado para impressão com cabeçalho, detalhe e totais.
+          </p>
           <form method="get" action="${pageContext.request.contextPath}/relatorios/romaneio"
-                target="_blank" class="nl-report-form">
+                class="nl-report-form" style="gap: 0.5rem;">
             <div class="nl-form-group">
               <label class="nl-form-label" for="sel-motorista">Motorista</label>
-              <select name="idMotorista" id="sel-motorista" class="nl-input-field" required>
-                <option value="">Selecione um motorista…</option>
+              <select name="idMotorista" id="sel-motorista" class="nl-input-field">
+                <option value="">Selecione…</option>
                 <c:forEach var="m" items="${motoristas}">
                   <option value="${m.id}"><c:out value="${m.nome}"/></option>
                 </c:forEach>
@@ -237,9 +257,9 @@
             </div>
             <div class="nl-form-group">
               <label class="nl-form-label" for="input-data">Data</label>
-              <input type="date" name="data" id="input-data" class="nl-input-field" required>
+              <input type="date" name="data" id="input-data" class="nl-input-field">
             </div>
-            <button type="submit" class="btn btn-primary" style="align-self: flex-start;">
+            <button type="submit" class="btn btn-secondary" style="align-self: flex-start;">
               <i class="bi bi-file-earmark-pdf-fill"></i> Gerar PDF
             </button>
           </form>

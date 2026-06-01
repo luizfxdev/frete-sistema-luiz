@@ -22,7 +22,6 @@ public class OcorrenciaControlador extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         String acao = req.getPathInfo();
         if (acao != null && acao.startsWith("/novo/")) {
             Long idFrete = Long.valueOf(acao.substring("/novo/".length()));

@@ -52,34 +52,53 @@ public class ManutencaoControlador extends HttpServlet {
     }
 
     @Override
-protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException, IOException {
-    String acao = req.getPathInfo();
-    if (acao == null) acao = "/";
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String acao = req.getPathInfo();
+        if (acao == null) acao = "/";
 
-    if (acao.startsWith("/excluir/")) {
+        if (acao.startsWith("/cancelar/")) {
+            try {
+                Long id = Long.valueOf(acao.substring("/cancelar/".length()));
+                manutencaoBO.cancelarManutencao(id);
+                resp.sendRedirect(req.getContextPath() + "/manutencoes");
+            } catch (NegocioException e) {
+                req.setAttribute("erro", e.getMessage());
+                listar(req, resp);
+            }
+            return;
+        }
+
         try {
-            Long id = Long.valueOf(acao.substring("/excluir/".length()));
-            manutencaoBO.excluir(id);
+            ManutencaoVeiculo m = bind(req);
+            manutencaoBO.registrarManutencao(m);
             resp.sendRedirect(req.getContextPath() + "/manutencoes");
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
-            listar(req, resp);
+            req.setAttribute("manutencao", bind(req));
+            preencherListas(req);
+            req.getRequestDispatcher("/WEB-INF/views/manutencao/form.jsp").forward(req, resp);
         }
-        return;
     }
 
-    try {
-        ManutencaoVeiculo m = bind(req);
-        manutencaoBO.salvar(m);
-        resp.sendRedirect(req.getContextPath() + "/manutencoes");
-    } catch (NegocioException e) {
-        req.setAttribute("erro", e.getMessage());
-        req.setAttribute("manutencao", bind(req));
-        preencherListas(req);
-        req.getRequestDispatcher("/WEB-INF/views/manutencao/form.jsp").forward(req, resp);
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String acao = req.getPathInfo();
+        if (acao == null || !acao.contains("/concluir/")) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        try {
+            Long id = Long.valueOf(acao.substring(acao.lastIndexOf("/") + 1));
+            ManutencaoVeiculo m = bindConclusao(req);
+            manutencaoBO.concluirManutencao(id, m);
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } catch (NegocioException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
-}
 
     private void listar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String filtro = req.getParameter("filtro");
@@ -112,10 +131,21 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         m.setDescricao(req.getParameter("descricao"));
         String inicio = req.getParameter("dataInicio");
         if (inicio != null && !inicio.isEmpty()) m.setDataInicio(LocalDate.parse(inicio));
+        String km = req.getParameter("kmAtual");
+        if (km != null && !km.isEmpty()) m.setKmAtual(new BigDecimal(km.replace(",", ".")));
+        String custo = req.getParameter("custo");
+        if (custo != null && !custo.isEmpty()) m.setCusto(new BigDecimal(custo.replace(",", ".")));
+        return m;
+    }
+
+    private ManutencaoVeiculo bindConclusao(HttpServletRequest req) {
+        ManutencaoVeiculo m = new ManutencaoVeiculo();
         String fim = req.getParameter("dataFim");
         if (fim != null && !fim.isEmpty()) m.setDataFim(LocalDate.parse(fim));
-        String custo = req.getParameter("custo");
-        if (custo != null && !custo.trim().isEmpty()) m.setCusto(new BigDecimal(custo.replace(",", ".")));
+        String km = req.getParameter("kmAtual");
+        if (km != null && !km.isEmpty()) m.setKmAtual(new BigDecimal(km.replace(",", ".")));
+        String dataInicio = req.getParameter("dataInicio");
+        if (dataInicio != null && !dataInicio.isEmpty()) m.setDataInicio(LocalDate.parse(dataInicio));
         return m;
     }
 
