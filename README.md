@@ -270,5 +270,4 @@ Desenvolvedor Treinee da GW Sistemas — Time de Inovação
 - 💼 **LinkedIn:** [in/luizfxdev](https://www.linkedin.com/in/luizfxdev)
 - 🐙 **GitHub:** [@luizfxdev](https://github.com/luizfxdev)
 
-- 💼 **LinkedIn:** [in/luizfxdev](https://www.linkedin.com/in/luizfxdev)
-- 🐙 **GitHub:** [@luizfxdev](https://github.com/luizfxdev)
+
