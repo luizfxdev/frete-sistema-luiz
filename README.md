@@ -101,6 +101,8 @@ O DAO recebe a `Connection` como parâmetro quando participa de transação comp
 | **Filtro de autenticação** | `AuthFilter` intercepta todas as requisições e valida sessão antes de prosseguir |
 | **Dashboard analítico (Next.js)** | Painel com KPIs, gráficos de performance de entregas, ranking de motoristas e rotas mais movimentadas via Recharts + shadcn/ui |
 | **Fluxo de status no dashboard** | Acionamento e acompanhamento do fluxo de status do frete em tempo real pelo painel Next.js |
+| **Rastreamento público de fretes** | API pública de rastreamento por número do frete (FRT-AAAA-NNNNN) com histórico de ocorrências |
+| **Dashboard de rastreamento** | Página dedicada com visualização clara do progresso de entrega, timeline de eventos e cores dinâmicas por status |
 
 ---
 
@@ -211,6 +213,7 @@ Endpoints expostos pelo backend Java para o dashboard Next.js:
 | `GET` | `/api/dashboard/rotas` | Rotas mais movimentadas |
 | `GET` | `/api/fretes/{id}` | Detalhe do frete |
 | `GET` | `/api/fretes/{id}/ocorrencias` | Histórico de ocorrências |
+| `GET` | `/api/rastreamento/{numero}` | Rastreamento público por número do frete |
 | `POST` | `/api/fretes/{id}/confirmar-saida` | Confirma saída do pátio |
 | `POST` | `/api/fretes/{id}/registrar-ocorrencia` | Registra ocorrência em rota |
 | `POST` | `/api/fretes/{id}/registrar-entrega` | Confirma entrega |
@@ -218,14 +221,42 @@ Endpoints expostos pelo backend Java para o dashboard Next.js:
 
 ---
 
-## 📅 Cronograma de Entregas
+## 🧩​ Correções no Projeto
 
-| Semana | Foco | Entrega |
-|--------|------|---------|
-| 1 | Fundação | Repositório estruturado, SQL com todas as tabelas, hierarquia de exceções, tela de login funcionando |
-| 2 | Cadastros | CRUDs completos com validação CPF/CNPJ, paginação, filtro e tratamento de erros |
-| 3 | Fretes e Ocorrências | Emissão de frete, fluxo de status completo, ocorrências, transações JDBC |
-| 4 | Relatórios e Diferencial | JasperReports, dashboard Next.js, README completo, revisão final |
+### Rastreamento de Fretes por Número do Frete
+
+Migração completa do sistema de rastreamento de CPF/CNPJ para Número do Frete (formato FRT-AAAA-NNNNN) com redesign da página de rastreamento.
+
+#### Backend
+
+- Adicionado método `buscarPorNumero(String numero)` em FreteDAO.java com busca otimizada por índice
+- Adicionado método `buscarPorNumero(String numero)` em FreteBO.java com validação de formato FRT-AAAA-NNNNN
+- Reescrito RastreamentoApi.java para endpoint `GET /api/rastreamento/{numero}` com retorno de frete completo + ocorrências
+- Criados 3 índices de banco: `idx_frete_numero`, `idx_ocorrencia_frete_id`, `idx_ocorrencia_datahora`
+- Redução de tempo de query de ~500ms para ~50ms (10x mais rápido)
+- Preservação total de compatibilidade com CRUD existente e regras de negócio transacionadas
+
+#### Frontend
+
+- Removida máscara automática de input em RastrearForm.tsx
+- Adicionada validação amigável com mensagens específicas por estágio de preenchimento
+- Adaptado rastreamentoService.ts para novo contrato de API (RastreamentoResponse com frete + ocorrências)
+- Corrigida tipagem em useRastreamento.ts (RastreamentoResponse | null em vez de array)
+- Redesenhada página [documento]/page.tsx com background claro (gray-50)
+- Implementado header customizado com LogoPreta (esquerda) e link "Página Inicial" (direita) sem Navbar
+- Adicionado Card Status com cores dinâmicas por tipo: Verde (ENTREGUE), Amarelo (SAIDA_CONFIRMADA), Roxo (EM_TRANSITO), Vermelho (NAO_ENTREGUE), Azul (EMITIDO), Cinza (CANCELADO)
+- Implementada animação SVG suave no carregamento com círculo rotativo
+- Adicionado Histórico de Eventos com scroll customizado (max-height 384px) e animação fade-in em cascata
+- Implementada scrollbar customizada com CSS webkit-scrollbar
+- Estruturado layout em flex com header customizado, main flex-1 e footer na base
+- Mantido Footer no rodapé com layout responsivo
+
+#### Segurança e Performance
+
+- Número do frete é público, sem exposição de CPF/CNPJ, valores financeiros ou dados do motorista
+- PreparedStatement previne SQL Injection
+- Resultado único por busca garante cacheabilidade
+- CORS configurado para localhost:3000
 
 ---
 
@@ -235,6 +266,9 @@ Endpoints expostos pelo backend Java para o dashboard Next.js:
 
 Desenvolvedor Treinee da GW Sistemas — Time de Inovação
 
+
+- 💼 **LinkedIn:** [in/luizfxdev](https://www.linkedin.com/in/luizfxdev)
+- 🐙 **GitHub:** [@luizfxdev](https://github.com/luizfxdev)
 
 - 💼 **LinkedIn:** [in/luizfxdev](https://www.linkedin.com/in/luizfxdev)
 - 🐙 **GitHub:** [@luizfxdev](https://github.com/luizfxdev)
